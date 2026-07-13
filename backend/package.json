@@ -1,0 +1,28 @@
+{
+  "name": "gestao-clinica-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "admin:create": "node src/scripts/createAdmin.js",
+    "db:migrate": "node src/scripts/migrate.js",
+    "db:migrate:baseline": "node src/scripts/migrate.js --baseline",
+    "test:integration": "node --test test/integration.test.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.9.2",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
