@@ -6,8 +6,9 @@ import {
   FileClock,
   LayoutDashboard,
   LogOut,
+  Settings,
   ShieldCheck,
-  Upload,
+  TrendingUp,
   UserRound,
   UsersRound
 } from 'lucide-react';
@@ -21,6 +22,7 @@ import { DashboardView } from './views/DashboardView.jsx';
 import { FinancialView } from './views/FinancialView.jsx';
 import { ImportView } from './views/ImportView.jsx';
 import { PatientsView } from './views/PatientsView.jsx';
+import { ReportsView } from './views/ReportsView.jsx';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -38,6 +40,7 @@ export default function App() {
   const [history, setHistory] = useState([]);
   const [historyPagination, setHistoryPagination] = useState({ page: 1, pageSize: 20, total: 0, totalPages: 0 });
   const [historyPatientFilter, setHistoryPatientFilter] = useState('');
+  const [reports, setReports] = useState(null);
   const [lastImport, setLastImport] = useState(null);
   const [adminSummary, setAdminSummary] = useState(null);
   const [adminUsers, setAdminUsers] = useState([]);
@@ -114,8 +117,9 @@ export default function App() {
         historyParams.set('patientId', historyPatientFilter);
       }
 
-      const [dashboardData, patientData, patientOptionsData, appointmentData, financialData, historyData] = await Promise.all([
+      const [dashboardData, reportsData, patientData, patientOptionsData, appointmentData, financialData, historyData] = await Promise.all([
         api('/dashboard'),
+        api('/reports'),
         api(`/patients?${patientParams.toString()}`),
         api('/patients?page=1&pageSize=100'),
         api(`/appointments?${appointmentParams.toString()}`),
@@ -123,6 +127,7 @@ export default function App() {
         api(`/clinical-history?${historyParams.toString()}`)
       ]);
       setDashboard(dashboardData.dashboard);
+      setReports(reportsData.reports);
       setPatients(patientData.patients || []);
       setPatientOptions(patientOptionsData.patients || []);
       setPatientPagination(patientData.pagination || { page: 1, pageSize: 20, total: 0, totalPages: 0 });
@@ -456,8 +461,9 @@ export default function App() {
     ['patients', 'Pacientes', UsersRound],
     ['appointments', 'Agenda', CalendarDays],
     ['financial', 'Financeiro', CreditCard],
-    ['history', 'Historico', FileClock],
-    ['import', 'Importacao', Upload]
+    ['history', 'Prontuario Clinico', FileClock],
+    ['reports', 'Relatorios', TrendingUp],
+    ['import', 'Configuracoes', Settings]
   ];
   const adminNavItems = [['admin', 'Administracao', ShieldCheck]];
 
@@ -502,6 +508,7 @@ export default function App() {
           <LogOut size={18} />
           Sair
         </button>
+        <span className="sidebar-footnote">Ambiente Local Seguro</span>
       </aside>
 
       <section className="content">
@@ -568,6 +575,7 @@ export default function App() {
           <FinancialView
             financials={financials}
             patients={patientOptions}
+            summary={dashboard?.stats}
             pagination={financialPagination}
             onPageChange={changeFinancialPage}
             onPageSizeChange={changeFinancialPageSize}
@@ -592,6 +600,9 @@ export default function App() {
             onDelete={deleteResource}
             loading={loading}
           />
+        )}
+        {user.role !== 'ADMIN' && activeView === 'reports' && (
+          <ReportsView reports={reports} />
         )}
         {user.role !== 'ADMIN' && activeView === 'import' && (
           <ImportView onImport={importBackup} loading={loading} lastImport={lastImport} />

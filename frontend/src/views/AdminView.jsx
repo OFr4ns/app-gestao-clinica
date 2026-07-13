@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Activity, Edit3, Plus, Power, PowerOff, RefreshCcw, Save, ShieldCheck, Trash2, UserRound, UsersRound, X } from 'lucide-react';
-import { Badge, EmptyState, Field, PaginationControls } from '../components.jsx';
+import { Badge, EmptyState, Field, PageHeader, PaginationControls } from '../components.jsx';
 import { fieldLimits, statusLabel } from '../utils.js';
 
 const emptyUserForm = {
@@ -68,7 +68,7 @@ export function AdminView({
   return (
     <div className="view-stack">
       <div className="toolbar">
-        <div><h2>Administracao</h2><p className="muted">Visao tecnica de usuarios e auditoria do sistema.</p></div>
+        <PageHeader title="Administracao" />
         <button className="icon-button" type="button" onClick={reload} title="Atualizar"><RefreshCcw size={18} /></button>
       </div>
       <section className="metric-grid">

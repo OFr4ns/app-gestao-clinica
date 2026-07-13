@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Clipboard, Upload } from 'lucide-react';
-import { Badge, EmptyState, Field } from '../components.jsx';
+import { Badge, EmptyState, Field, PageHeader } from '../components.jsx';
 
 const legacyExportScript = `(() => {
   const read = (key) => {
@@ -141,10 +141,10 @@ export function ImportView({ onImport, loading, lastImport }) {
 
   return (
     <div className="view-stack">
-      <div className="toolbar"><div><h2>Importacao</h2><p className="muted">Migre dados do HTML legado a partir do backup JSON gerado no navegador antigo.</p></div></div>
+      <div className="toolbar"><PageHeader title="Configuracoes Globais" /></div>
       <section className="split-layout">
         <form className="section form-stack" onSubmit={submit}>
-          <h3>Importar backup</h3>
+          <h3>Importacao de Dados Legados</h3>
           <Field label="Arquivo"><input type="file" accept="application/json,.json,text/html,.html" onChange={readFile} /></Field>
           <Field label="Nome de origem"><input value={sourceFilename} onChange={(event) => setSourceFilename(event.target.value)} /></Field>
           <Field label="Conteudo JSON"><textarea className="json-input" value={payload} onChange={(event) => updatePayload(event.target.value)} required /></Field>
@@ -154,7 +154,7 @@ export function ImportView({ onImport, loading, lastImport }) {
               <span>Pacientes: {preview.patients}</span>
               <span>Agendamentos: {preview.appointments}</span>
               <span>Financeiro: {preview.financials}</span>
-              <span>Historico: {preview.history}</span>
+              <span>Prontuario: {preview.history}</span>
             </div>
           )}
           {localError && <div className="form-error">{localError}</div>}
@@ -178,7 +178,7 @@ export function ImportView({ onImport, loading, lastImport }) {
               <span>Pacientes: {lastImport.counts?.patients || 0}</span>
               <span>Agendamentos: {lastImport.counts?.appointments || 0}</span>
               <span>Financeiro: {lastImport.counts?.financials || 0}</span>
-              <span>Historico: {lastImport.counts?.history || 0}</span>
+              <span>Prontuario: {lastImport.counts?.history || 0}</span>
             </div>
           ) : <EmptyState>Nenhuma importacao executada nesta sessao.</EmptyState>}
       </section>

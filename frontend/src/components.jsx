@@ -1,3 +1,62 @@
+function formatLongDate(date = new Date()) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  }).format(date);
+}
+
+export function PageHeader({ title, children }) {
+  return (
+    <header className="page-header">
+      <h1>{title}</h1>
+      <div className="page-header-side">
+        <span>{formatLongDate()}</span>
+        {children}
+      </div>
+    </header>
+  );
+}
+
+export function StatCard({ label, value, tone = 'default' }) {
+  return (
+    <div className={`stat-card stat-card-${tone}`}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+export function DataCard({ title, actions, children, className = '' }) {
+  return (
+    <section className={`data-card ${className}`.trim()}>
+      {(title || actions) && (
+        <div className="data-card-header">
+          {title && <h3>{title}</h3>}
+          {actions && <div className="data-card-actions">{actions}</div>}
+        </div>
+      )}
+      {children}
+    </section>
+  );
+}
+
+export function Modal({ title, children, footer, onClose, width = 'default' }) {
+  return (
+    <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div className={`modal-content modal-${width}`}>
+        <div className="modal-header">
+          <h3 id="modal-title">{title}</h3>
+          <button className="modal-close" type="button" onClick={onClose} aria-label="Fechar">x</button>
+        </div>
+        <div className="modal-body">{children}</div>
+        {footer && <div className="modal-footer">{footer}</div>}
+      </div>
+    </div>
+  );
+}
+
 export function Field({ label, children }) {
   return (
     <label className="field">
