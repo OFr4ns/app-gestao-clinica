@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Activity, Edit3, Plus, Power, PowerOff, RefreshCcw, Save, ShieldCheck, Trash2, UserRound, UsersRound, X } from 'lucide-react';
 import { Badge, EmptyState, Field, PaginationControls } from '../components.jsx';
-import { statusLabel } from '../utils.js';
+import { fieldLimits, statusLabel } from '../utils.js';
 
 const emptyUserForm = {
   name: '',
@@ -83,8 +83,8 @@ export function AdminView({
             <h3>{editingId ? 'Editar usuario' : 'Novo usuario'}</h3>
             {editingId && <button className="icon-button" type="button" onClick={cancel} title="Cancelar edicao"><X size={17} /></button>}
           </div>
-          <Field label="Nome"><input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></Field>
-          <Field label="E-mail"><input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required /></Field>
+          <Field label="Nome"><input maxLength={fieldLimits.name} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></Field>
+          <Field label="E-mail"><input type="email" maxLength={fieldLimits.email} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required /></Field>
           <Field label="Perfil">
             <select value={form.role} onChange={(event) => setForm({ ...form, role: event.target.value })}>
               <option value="PSYCHOLOGIST">Psicologo</option>
@@ -95,6 +95,7 @@ export function AdminView({
             <input
               type="password"
               minLength={8}
+              maxLength={fieldLimits.password}
               value={form.password}
               onChange={(event) => setForm({ ...form, password: event.target.value })}
               required={!editingId}

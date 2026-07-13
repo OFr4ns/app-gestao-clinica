@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ShieldCheck } from 'lucide-react';
 import { api } from '../api.js';
 import { Field } from '../components.jsx';
+import { fieldLimits } from '../utils.js';
 
 export function AuthScreen({ onAuthenticated }) {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -32,8 +33,8 @@ export function AuthScreen({ onAuthenticated }) {
         <h1>Acessar sistema</h1>
         <p className="muted">Ambiente dedicado para gestao de pacientes, agenda e financeiro.</p>
         <form className="form-stack" onSubmit={submit}>
-          <Field label="E-mail"><input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required /></Field>
-          <Field label="Senha"><input type="password" minLength={8} value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} required /></Field>
+          <Field label="E-mail"><input type="email" maxLength={fieldLimits.email} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required /></Field>
+          <Field label="Senha"><input type="password" minLength={8} maxLength={fieldLimits.password} value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} required /></Field>
           {error && <div className="form-error">{error}</div>}
           <button className="primary-button" type="submit" disabled={loading}>{loading ? 'Processando...' : 'Entrar'}</button>
         </form>

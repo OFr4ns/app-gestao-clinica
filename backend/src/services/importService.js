@@ -16,6 +16,14 @@ import {
 import { insertPatient } from '../repositories/patientRepository.js';
 import { encryptField } from '../security/cryptoService.js';
 import { AppError } from '../utils/AppError.js';
+import {
+  FIELD_LIMITS,
+  limitText,
+  permissiveCpf,
+  permissiveEmail,
+  permissiveMoney,
+  permissivePhone
+} from '../validation/fieldValidation.js';
 
 function requirePsychologist(psychologistId) {
   if (!psychologistId) {
@@ -73,30 +81,30 @@ function normalizeTime(value) {
 }
 
 function importSourceFilename(payload) {
-  return payload?.sourceFilename || payload?.filename || null;
+  return limitText(payload?.sourceFilename || payload?.filename || '', FIELD_LIMITS.sourceFilename) || null;
 }
 
 function mapOldPatient(oldPatient) {
   return {
-    recordNumber: oldPatient.recordNumber,
-    name: oldPatient.name || 'Paciente importado',
+    recordNumber: limitText(oldPatient.recordNumber, FIELD_LIMITS.recordNumber),
+    name: limitText(oldPatient.name || 'Paciente importado', FIELD_LIMITS.name) || 'Paciente importado',
     dob: oldPatient.dob,
-    cpf: oldPatient.cpf,
-    rg: oldPatient.rg,
-    phone: oldPatient.phone,
-    whatsapp: oldPatient.whatsapp,
-    email: oldPatient.email,
-    profession: oldPatient.profession,
-    civilStatus: oldPatient.civilStatus,
-    address: oldPatient.address,
-    city: oldPatient.city,
-    state: oldPatient.state,
-    insurance: oldPatient.insurance,
+    cpf: permissiveCpf(oldPatient.cpf),
+    rg: limitText(oldPatient.rg, FIELD_LIMITS.rg),
+    phone: permissivePhone(oldPatient.phone),
+    whatsapp: permissivePhone(oldPatient.whatsapp),
+    email: permissiveEmail(oldPatient.email),
+    profession: limitText(oldPatient.profession, FIELD_LIMITS.profession),
+    civilStatus: limitText(oldPatient.civilStatus, FIELD_LIMITS.civilStatus),
+    address: limitText(oldPatient.address, FIELD_LIMITS.address),
+    city: limitText(oldPatient.city, FIELD_LIMITS.city),
+    state: limitText(oldPatient.state, FIELD_LIMITS.state),
+    insurance: limitText(oldPatient.insurance, FIELD_LIMITS.insurance),
     status: oldPatient.status || 'Ativo',
-    notes: oldPatient.notes,
-    emergencyName: oldPatient.emergencyName,
-    emergencyRelationship: oldPatient.emergencyRelationship,
-    emergencyPhone: oldPatient.emergencyPhone
+    notes: limitText(oldPatient.notes, FIELD_LIMITS.notes),
+    emergencyName: limitText(oldPatient.emergencyName, FIELD_LIMITS.emergencyName),
+    emergencyRelationship: limitText(oldPatient.emergencyRelationship, FIELD_LIMITS.emergencyRelationship),
+    emergencyPhone: permissivePhone(oldPatient.emergencyPhone)
   };
 }
 
@@ -106,7 +114,7 @@ function mapOldAppointment(oldAppointment, patientId) {
     date: normalizeDate(oldAppointment.date),
     time: normalizeTime(oldAppointment.time),
     status: oldAppointment.status || 'Agendado',
-    notes: oldAppointment.notes
+    notes: limitText(oldAppointment.notes, FIELD_LIMITS.appointmentNotes)
   };
 }
 
@@ -114,13 +122,13 @@ function mapOldFinancial(oldFinancial, patientId, appointmentId) {
   return {
     patientId,
     appointmentId,
-    amount: oldFinancial.value ?? oldFinancial.amount ?? 0,
+    amount: permissiveMoney(oldFinancial.value ?? oldFinancial.amount ?? 0),
     method: oldFinancial.method || 'Dinheiro',
     dueDate: normalizeDate(oldFinancial.dueDate),
     paymentDate: oldFinancial.paymentDate ? normalizeDate(oldFinancial.paymentDate) : null,
     status: oldFinancial.status || 'Pendente',
-    description: oldFinancial.description || 'Registro importado',
-    notes: oldFinancial.notes
+    description: limitText(oldFinancial.description || 'Registro importado', FIELD_LIMITS.financialDescription),
+    notes: limitText(oldFinancial.notes, FIELD_LIMITS.financialNotes)
   };
 }
 
@@ -128,8 +136,8 @@ function mapOldHistory(oldHistory, patientId) {
   return {
     patientId,
     serviceDate: normalizeDate(oldHistory.date || oldHistory.serviceDate),
-    title: oldHistory.title || 'Evolucao importada',
-    notes: oldHistory.notes || 'Sem anotacoes.'
+    title: limitText(oldHistory.title || 'Evolucao importada', FIELD_LIMITS.clinicalTitle),
+    notes: limitText(oldHistory.notes || 'Sem anotacoes.', FIELD_LIMITS.clinicalNotes)
   };
 }
 

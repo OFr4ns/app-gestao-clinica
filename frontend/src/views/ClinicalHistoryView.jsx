@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Edit3, Plus, Save, Trash2, X } from 'lucide-react';
 import { EmptyState, Field, PaginationControls } from '../components.jsx';
 import { emptyHistory } from '../forms.js';
-import { pick } from '../utils.js';
+import { fieldLimits, pick } from '../utils.js';
 
 export function ClinicalHistoryView({
   history,
@@ -52,8 +52,8 @@ export function ClinicalHistoryView({
           <div className="section-title-row"><h3>{editingId ? 'Editar registro' : 'Novo registro'}</h3>{editingId && <button className="icon-button" type="button" onClick={cancel} title="Cancelar edicao"><X size={17} /></button>}</div>
           <Field label="Paciente"><select value={form.patientId} onChange={(event) => setForm({ ...form, patientId: event.target.value })} required><option value="">Selecione</option>{patients.map((patient) => <option value={patient.id} key={patient.id}>{patient.name}</option>)}</select></Field>
           <Field label="Data do atendimento"><input type="date" value={form.serviceDate} onChange={(event) => setForm({ ...form, serviceDate: event.target.value })} required /></Field>
-          <Field label="Titulo"><input value={form.title || ''} onChange={(event) => setForm({ ...form, title: event.target.value })} required /></Field>
-          <Field label="Anotacoes"><textarea value={form.notes || ''} onChange={(event) => setForm({ ...form, notes: event.target.value })} required /></Field>
+          <Field label="Titulo"><input maxLength={fieldLimits.clinicalTitle} value={form.title || ''} onChange={(event) => setForm({ ...form, title: event.target.value })} required /></Field>
+          <Field label="Anotacoes"><textarea maxLength={fieldLimits.clinicalNotes} value={form.notes || ''} onChange={(event) => setForm({ ...form, notes: event.target.value })} required /></Field>
           <button className="primary-button" type="submit" disabled={loading}>{editingId ? <Save size={17} /> : <Plus size={17} />}{editingId ? 'Salvar' : 'Registrar'}</button>
         </form>
         <div className="section">

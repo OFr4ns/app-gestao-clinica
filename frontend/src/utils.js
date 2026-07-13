@@ -1,5 +1,30 @@
 export const today = () => new Date().toISOString().slice(0, 10);
 
+export const fieldLimits = {
+  name: 160,
+  email: 255,
+  password: 128,
+  recordNumber: 60,
+  cpf: 11,
+  rg: 30,
+  phone: 11,
+  profession: 120,
+  notes: 5000,
+  appointmentNotes: 2000,
+  financialDescription: 160,
+  financialNotes: 2000,
+  clinicalTitle: 160,
+  clinicalNotes: 10000
+};
+
+export function digitsOnly(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+export function limitDigits(value, maxLength) {
+  return digitsOnly(value).slice(0, maxLength);
+}
+
 export function money(value) {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',

@@ -17,6 +17,12 @@ import { hashPassword } from '../security/passwordService.js';
 import { AppError } from '../utils/AppError.js';
 import { toIsoDateTime } from '../utils/dateUtils.js';
 import { buildPagination, paginateItems } from '../utils/pagination.js';
+import {
+  FIELD_LIMITS,
+  assertEmail,
+  assertMaxLength,
+  assertRequiredMaxLength
+} from '../validation/fieldValidation.js';
 
 function mapUser(row) {
   return {
@@ -119,17 +125,22 @@ function normalizeStatus(status) {
 }
 
 function validateUserPayload({ name, email, password }, { passwordRequired }) {
-  if (!name || !email || (passwordRequired && !password)) {
-    throw new AppError('Name, email and password are required', 400, 'VALIDATION_ERROR');
+  const normalizedName = assertRequiredMaxLength(name, FIELD_LIMITS.name, 'Nome');
+  const normalizedEmail = assertEmail(email, { required: true });
+
+  if (passwordRequired && !password) {
+    throw new AppError('Senha e obrigatoria', 400, 'VALIDATION_ERROR');
   }
 
   if (password && password.length < 8) {
     throw new AppError('Password must have at least 8 characters', 400, 'WEAK_PASSWORD');
   }
 
+  assertMaxLength(password, FIELD_LIMITS.password, 'Senha');
+
   return {
-    name: name.trim(),
-    email: email.trim().toLowerCase()
+    name: normalizedName,
+    email: normalizedEmail
   };
 }
 

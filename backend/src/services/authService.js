@@ -15,6 +15,12 @@ import {
 } from '../repositories/sessionRepository.js';
 import { hashPassword, verifyPassword } from '../security/passwordService.js';
 import { sha256 } from '../security/hashService.js';
+import {
+  FIELD_LIMITS,
+  assertEmail,
+  assertMaxLength,
+  assertRequiredMaxLength
+} from '../validation/fieldValidation.js';
 
 function publicUser(user) {
   return {
@@ -48,7 +54,9 @@ export async function registerPsychologist({ name, email, password }) {
     throw new AppError('Password must have at least 8 characters', 400, 'WEAK_PASSWORD');
   }
 
-  const normalizedEmail = email.trim().toLowerCase();
+  assertMaxLength(password, FIELD_LIMITS.password, 'Senha');
+  const normalizedName = assertRequiredMaxLength(name, FIELD_LIMITS.name, 'Nome');
+  const normalizedEmail = assertEmail(email, { required: true });
   const existing = await findUserByEmail(normalizedEmail);
 
   if (existing) {
@@ -57,7 +65,7 @@ export async function registerPsychologist({ name, email, password }) {
 
   const user = await createPsychologistUser({
     id: uuid(),
-    name: name.trim(),
+    name: normalizedName,
     email: normalizedEmail,
     passwordHash: await hashPassword(password)
   });
@@ -70,7 +78,8 @@ export async function login({ email, password }) {
     throw new AppError('Email and password are required', 400, 'VALIDATION_ERROR');
   }
 
-  const user = await findUserByEmail(email.trim().toLowerCase());
+  assertMaxLength(password, FIELD_LIMITS.password, 'Senha');
+  const user = await findUserByEmail(assertEmail(email, { required: true }));
 
   if (!user || user.status !== 'ACTIVE') {
     throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');

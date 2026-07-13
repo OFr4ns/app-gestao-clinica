@@ -18,6 +18,13 @@ import { insertFinancialRecord, markFinancialRecordPaidByAppointment } from '../
 import { findPatientById } from '../repositories/patientRepository.js';
 import { AppError } from '../utils/AppError.js';
 import { buildPagination, paginateItems } from '../utils/pagination.js';
+import {
+  FIELD_LIMITS,
+  assertMaxLength,
+  normalizeDateField,
+  normalizeMoney,
+  normalizeTimeField
+} from '../validation/fieldValidation.js';
 
 const allowedStatuses = ['SCHEDULED', 'CONFIRMED', 'ATTENDED', 'MISSED', 'RESCHEDULED', 'REMOVED'];
 
@@ -31,6 +38,10 @@ function validateAppointment(data) {
   if (!data.patientId) {
     throw new AppError('Patient is required', 400, 'VALIDATION_ERROR');
   }
+
+  data.date = normalizeDateField(data.date, 'Data do agendamento');
+  data.time = normalizeTimeField(data.time);
+  data.notes = assertMaxLength(data.notes, FIELD_LIMITS.appointmentNotes, 'Observacoes');
 
   if (!data.date) {
     throw new AppError('Appointment date is required', 400, 'VALIDATION_ERROR');
@@ -47,6 +58,10 @@ function validateAppointment(data) {
 
   if (data.generateFinancial !== false && data.amount !== undefined && Number(data.amount) < 0) {
     throw new AppError('Financial amount cannot be negative', 400, 'INVALID_AMOUNT');
+  }
+
+  if (data.generateFinancial !== false && data.amount !== undefined) {
+    data.amount = normalizeMoney(data.amount);
   }
 }
 

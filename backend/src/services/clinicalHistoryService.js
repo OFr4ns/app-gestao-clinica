@@ -14,6 +14,12 @@ import {
 import { findPatientById } from '../repositories/patientRepository.js';
 import { AppError } from '../utils/AppError.js';
 import { buildPagination, paginateItems } from '../utils/pagination.js';
+import {
+  FIELD_LIMITS,
+  assertMaxLength,
+  assertRequiredMaxLength,
+  normalizeDateField
+} from '../validation/fieldValidation.js';
 
 function requirePsychologist(psychologistId) {
   if (!psychologistId) {
@@ -26,16 +32,12 @@ function validateClinicalHistory(data) {
     throw new AppError('Patient is required', 400, 'VALIDATION_ERROR');
   }
 
+  data.serviceDate = normalizeDateField(data.serviceDate || data.date, 'Data do atendimento');
+  data.title = assertRequiredMaxLength(data.title, FIELD_LIMITS.clinicalTitle, 'Titulo');
+  data.notes = assertRequiredMaxLength(data.notes, FIELD_LIMITS.clinicalNotes, 'Anotacoes');
+
   if (!(data.serviceDate || data.date)) {
     throw new AppError('Service date is required', 400, 'VALIDATION_ERROR');
-  }
-
-  if (!data.title || !String(data.title).trim()) {
-    throw new AppError('Title is required', 400, 'VALIDATION_ERROR');
-  }
-
-  if (!data.notes || !String(data.notes).trim()) {
-    throw new AppError('Notes are required', 400, 'VALIDATION_ERROR');
   }
 }
 

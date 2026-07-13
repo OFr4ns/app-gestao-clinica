@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { CheckCircle2, Edit3, Plus, Save, Trash2, X, XCircle } from 'lucide-react';
 import { Badge, EmptyState, Field, PaginationControls } from '../components.jsx';
 import { emptyAppointment } from '../forms.js';
-import { pick, statusLabel } from '../utils.js';
+import { fieldLimits, pick, statusLabel } from '../utils.js';
 
 export function AppointmentsView({
   appointments,
@@ -57,7 +57,7 @@ export function AppointmentsView({
             <Field label="Hora"><input type="time" value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} required /></Field>
           </div>
           <Field label="Status"><select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="SCHEDULED">Agendado</option><option value="CONFIRMED">Confirmado</option><option value="ATTENDED">Presenca</option><option value="MISSED">Falta</option><option value="RESCHEDULED">Reagendado</option></select></Field>
-          <Field label="Observacoes"><textarea value={form.notes || ''} onChange={(event) => setForm({ ...form, notes: event.target.value })} /></Field>
+          <Field label="Observacoes"><textarea maxLength={fieldLimits.appointmentNotes} value={form.notes || ''} onChange={(event) => setForm({ ...form, notes: event.target.value })} /></Field>
           <button className="primary-button" type="submit" disabled={loading}>{editingId ? <Save size={17} /> : <Plus size={17} />}{editingId ? 'Salvar' : 'Agendar'}</button>
         </form>
         <div className="section">

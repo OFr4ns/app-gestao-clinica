@@ -2,10 +2,16 @@ import { v4 as uuid } from 'uuid';
 import { findUserByEmail, createAdminUser } from '../repositories/userRepository.js';
 import { hashPassword } from '../security/passwordService.js';
 import { pool } from '../db/pool.js';
+import {
+  FIELD_LIMITS,
+  assertEmail,
+  assertMaxLength,
+  assertRequiredMaxLength
+} from '../validation/fieldValidation.js';
 
 async function main() {
-  const name = process.env.ADMIN_NAME || 'Admin';
-  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const name = assertRequiredMaxLength(process.env.ADMIN_NAME || 'Admin', FIELD_LIMITS.name, 'Nome');
+  const email = assertEmail(process.env.ADMIN_EMAIL, { required: true });
   const password = process.env.ADMIN_PASSWORD;
 
   if (!email || !password) {
@@ -15,6 +21,7 @@ async function main() {
   if (password.length < 8) {
     throw new Error('ADMIN_PASSWORD must have at least 8 characters');
   }
+  assertMaxLength(password, FIELD_LIMITS.password, 'Senha');
 
   const existing = await findUserByEmail(email);
   if (existing) {

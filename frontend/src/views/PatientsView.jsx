@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Edit3, FileDown, Plus, Save, Search, Trash2, X } from 'lucide-react';
 import { Badge, EmptyState, Field, PaginationControls } from '../components.jsx';
 import { emptyPatient } from '../forms.js';
-import { pick, statusLabel } from '../utils.js';
+import { fieldLimits, limitDigits, pick, statusLabel } from '../utils.js';
 
 export function PatientsView({
   patients,
@@ -50,21 +50,21 @@ export function PatientsView({
       <section className="work-grid">
         <form className="section form-stack" onSubmit={submit}>
           <div className="section-title-row"><h3>{editingId ? 'Editar paciente' : 'Novo paciente'}</h3>{editingId && <button className="icon-button" type="button" onClick={cancel} title="Cancelar edicao"><X size={17} /></button>}</div>
-          <Field label="Nome"><input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></Field>
+          <Field label="Nome"><input maxLength={fieldLimits.name} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></Field>
           <div className="two-columns">
-            <Field label="Telefone"><input value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></Field>
-            <Field label="WhatsApp"><input value={form.whatsapp} onChange={(event) => setForm({ ...form, whatsapp: event.target.value })} /></Field>
+            <Field label="Telefone"><input inputMode="numeric" maxLength={fieldLimits.phone} value={form.phone} onChange={(event) => setForm({ ...form, phone: limitDigits(event.target.value, fieldLimits.phone) })} /></Field>
+            <Field label="WhatsApp"><input inputMode="numeric" maxLength={fieldLimits.phone} value={form.whatsapp} onChange={(event) => setForm({ ...form, whatsapp: limitDigits(event.target.value, fieldLimits.phone) })} /></Field>
           </div>
-          <Field label="E-mail"><input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} /></Field>
+          <Field label="E-mail"><input type="email" maxLength={fieldLimits.email} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} /></Field>
           <div className="two-columns">
-            <Field label="CPF"><input value={form.cpf} onChange={(event) => setForm({ ...form, cpf: event.target.value })} /></Field>
+            <Field label="CPF"><input inputMode="numeric" maxLength={fieldLimits.cpf} value={form.cpf} onChange={(event) => setForm({ ...form, cpf: limitDigits(event.target.value, fieldLimits.cpf) })} /></Field>
             <Field label="Nascimento"><input type="date" value={form.dob || ''} onChange={(event) => setForm({ ...form, dob: event.target.value })} /></Field>
           </div>
           <div className="two-columns">
-            <Field label="Profissao"><input value={form.profession} onChange={(event) => setForm({ ...form, profession: event.target.value })} /></Field>
+            <Field label="Profissao"><input maxLength={fieldLimits.profession} value={form.profession} onChange={(event) => setForm({ ...form, profession: event.target.value })} /></Field>
             <Field label="Status"><select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="ACTIVE">Ativo</option><option value="INACTIVE">Inativo</option></select></Field>
           </div>
-          <Field label="Observacoes"><textarea value={form.notes || ''} onChange={(event) => setForm({ ...form, notes: event.target.value })} /></Field>
+          <Field label="Observacoes"><textarea maxLength={fieldLimits.notes} value={form.notes || ''} onChange={(event) => setForm({ ...form, notes: event.target.value })} /></Field>
           <button className="primary-button" type="submit" disabled={loading}>{editingId ? <Save size={17} /> : <Plus size={17} />}{editingId ? 'Salvar' : 'Adicionar'}</button>
         </form>
         <div className="section">

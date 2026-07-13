@@ -22,6 +22,16 @@ import { listClinicalHistory } from '../repositories/clinicalHistoryRepository.j
 import { listFinancialRecordsByPatient } from '../repositories/financialRepository.js';
 import { AppError } from '../utils/AppError.js';
 import { buildPagination, paginateItems } from '../utils/pagination.js';
+import {
+  FIELD_LIMITS,
+  assertEmail,
+  assertMaxLength,
+  assertRequiredMaxLength,
+  normalizeCpf,
+  normalizeDateField,
+  normalizeOptionalDigits,
+  normalizePhone
+} from '../validation/fieldValidation.js';
 
 function requirePsychologist(psychologistId) {
   if (!psychologistId) {
@@ -50,14 +60,35 @@ function mergePatient(existing, incoming) {
 }
 
 function validatePatient(patient) {
-  if (!patient.name || !String(patient.name).trim()) {
-    throw new AppError('Patient name is required', 400, 'VALIDATION_ERROR');
-  }
-
   const status = normalizePatientStatus(patient.status);
   if (!['ACTIVE', 'INACTIVE'].includes(status)) {
     throw new AppError('Invalid patient status', 400, 'INVALID_STATUS');
   }
+}
+
+function normalizePatientPayload(patient) {
+  return {
+    ...patient,
+    recordNumber: assertMaxLength(patient.recordNumber, FIELD_LIMITS.recordNumber, 'Prontuario'),
+    name: assertRequiredMaxLength(patient.name, FIELD_LIMITS.name, 'Nome'),
+    dob: normalizeDateField(patient.dob, 'Nascimento'),
+    cpf: normalizeCpf(patient.cpf),
+    rg: normalizeOptionalDigits(patient.rg, FIELD_LIMITS.rg, 'RG'),
+    phone: normalizePhone(patient.phone, 'Telefone'),
+    whatsapp: normalizePhone(patient.whatsapp, 'WhatsApp'),
+    email: assertEmail(patient.email),
+    profession: assertMaxLength(patient.profession, FIELD_LIMITS.profession, 'Profissao'),
+    civilStatus: assertMaxLength(patient.civilStatus, FIELD_LIMITS.civilStatus, 'Estado civil'),
+    address: assertMaxLength(patient.address, FIELD_LIMITS.address, 'Endereco'),
+    city: assertMaxLength(patient.city, FIELD_LIMITS.city, 'Cidade'),
+    state: assertMaxLength(patient.state, FIELD_LIMITS.state, 'Estado'),
+    insurance: assertMaxLength(patient.insurance, FIELD_LIMITS.insurance, 'Convenio'),
+    notes: assertMaxLength(patient.notes, FIELD_LIMITS.notes, 'Observacoes'),
+    emergencyName: assertMaxLength(patient.emergencyName, FIELD_LIMITS.emergencyName, 'Contato de emergencia'),
+    emergencyRelationship: assertMaxLength(patient.emergencyRelationship, FIELD_LIMITS.emergencyRelationship, 'Relacao do contato de emergencia'),
+    emergencyPhone: normalizePhone(patient.emergencyPhone, 'Telefone de emergencia'),
+    status: normalizePatientStatus(patient.status)
+  };
 }
 
 export async function getPatients({ psychologistId, status = 'ACTIVE', search = '', pagination }) {
@@ -99,11 +130,11 @@ export async function createPatient({ psychologistId, data }) {
   requirePsychologist(psychologistId);
 
   const total = await countPatients({ psychologistId });
-  const patient = {
+  const patient = normalizePatientPayload({
     ...data,
     recordNumber: data.recordNumber || buildRecordNumber(total),
     status: normalizePatientStatus(data.status)
-  };
+  });
 
   validatePatient(patient);
 
@@ -121,7 +152,7 @@ export async function editPatient({ id, psychologistId, data }) {
   requirePsychologist(psychologistId);
 
   const current = await getPatient({ id, psychologistId });
-  const merged = mergePatient(current, data);
+  const merged = normalizePatientPayload(mergePatient(current, data));
   merged.status = normalizePatientStatus(merged.status);
 
   validatePatient(merged);

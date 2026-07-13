@@ -52,6 +52,8 @@ Em todas as telas:
 - Dados de um psicologo nao devem aparecer para outro psicologo.
 - Botoes de exclusao devem pedir confirmacao antes de excluir.
 - A exclusao remove o item das listagens, mas mantem registro interno quando aplicavel.
+- Campos de texto devem respeitar limite maximo de caracteres.
+- Campos numericos, como telefone, WhatsApp e CPF, devem aceitar apenas numeros quando digitados na interface.
 
 ## Tela de login
 
@@ -230,10 +232,10 @@ Resultado esperado:
 Campos:
 
 - Nome: obrigatorio.
-- Telefone: opcional.
-- WhatsApp: opcional.
+- Telefone: opcional, somente numeros, 10 ou 11 digitos.
+- WhatsApp: opcional, somente numeros, 10 ou 11 digitos.
 - E-mail: opcional.
-- CPF: opcional.
+- CPF: opcional, somente numeros, 11 digitos.
 - Nascimento: opcional.
 - Profissao: opcional.
 - Status: `Ativo` ou `Inativo`.
@@ -970,6 +972,23 @@ Acao:
 Resultado esperado:
 
 - O navegador deve bloquear o envio ou o sistema deve mostrar erro.
+
+### Limites e formatos dos campos
+
+Acao:
+
+- Tentar digitar letras em telefone, WhatsApp ou CPF.
+- Tentar salvar telefone com menos de 10 digitos.
+- Tentar salvar CPF com menos de 11 digitos.
+- Tentar salvar textos maiores que o limite do campo.
+
+Resultado esperado:
+
+- Telefone, WhatsApp e CPF devem manter apenas numeros na interface.
+- Backend deve rejeitar telefone com quantidade invalida de digitos.
+- Backend deve rejeitar CPF com quantidade invalida de digitos.
+- Backend deve rejeitar textos acima do limite permitido.
+- Telefone mascarado vindo por API, como `(16)99420-3492`, deve ser normalizado para `16994203492`.
 
 ### Datas e valores
 

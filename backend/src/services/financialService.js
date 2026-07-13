@@ -18,6 +18,12 @@ import {
 import { findPatientById } from '../repositories/patientRepository.js';
 import { AppError } from '../utils/AppError.js';
 import { buildPagination, paginateItems } from '../utils/pagination.js';
+import {
+  FIELD_LIMITS,
+  assertMaxLength,
+  normalizeDateField,
+  normalizeMoney
+} from '../validation/fieldValidation.js';
 
 const allowedStatuses = ['PENDING', 'PAID', 'OVERDUE'];
 const allowedMethods = ['CASH', 'PIX', 'CARD', 'INSURANCE'];
@@ -33,9 +39,11 @@ function validateFinancialRecord(data) {
     throw new AppError('Patient is required', 400, 'VALIDATION_ERROR');
   }
 
-  if (data.amount === undefined || data.amount === null || Number(data.amount) < 0) {
-    throw new AppError('A valid amount is required', 400, 'INVALID_AMOUNT');
-  }
+  data.amount = normalizeMoney(data.amount);
+  data.dueDate = normalizeDateField(data.dueDate, 'Vencimento');
+  data.paymentDate = data.paymentDate ? normalizeDateField(data.paymentDate, 'Data de pagamento') : null;
+  data.description = assertMaxLength(data.description, FIELD_LIMITS.financialDescription, 'Descricao');
+  data.notes = assertMaxLength(data.notes, FIELD_LIMITS.financialNotes, 'Observacoes');
 
   if (!data.dueDate) {
     throw new AppError('Due date is required', 400, 'VALIDATION_ERROR');

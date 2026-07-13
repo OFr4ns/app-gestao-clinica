@@ -50,6 +50,8 @@ Este projeto transforma essa ideia inicial em uma aplicacao mais robusta, com pe
 - Editar dados cadastrais.
 - Ativar ou inativar pacientes.
 - Buscar pacientes por dados descriptografados.
+- Validar limites de campos.
+- Normalizar telefone, WhatsApp e CPF para salvar apenas numeros.
 - Exportar dados de um paciente em JSON.
 - Excluir logicamente pacientes.
 - Paginacao com seletor de itens por pagina.
@@ -120,6 +122,8 @@ O sistema foi desenhado para evitar vazamento entre psicologos.
 - Sessoes sao armazenadas com token hasheado.
 - Operacoes sensiveis usam CSRF.
 - Administradores gerenciam acessos, mas a auditoria registra eventos relevantes.
+- Entradas possuem limites maximos de caracteres no frontend e no backend.
+- Campos como telefone, WhatsApp e CPF sao normalizados para manter apenas digitos validos.
 
 ## Stack
 
@@ -380,6 +384,7 @@ O que os testes cobrem:
 - rejeicao de rotas protegidas sem autenticacao;
 - paginacao de pacientes;
 - paginacao das principais listagens;
+- limites e normalizacao de telefone, WhatsApp e CPF;
 - cadastro publico bloqueado;
 - criacao e gestao de usuarios pelo admin;
 - protecao CSRF.

@@ -242,6 +242,56 @@ test('patients endpoint supports pagination with search and page size limits', a
   assert.equal(outsiderPage.data.patients.length, 0);
 });
 
+test('patient validation normalizes digits and rejects invalid fields', async () => {
+  const owner = await registerAndLogin('field-validation');
+  const maskedPatient = await safeRequest('/patients', {
+    method: 'POST',
+    cookie: owner.cookie,
+    body: {
+      name: 'Paciente Mascara',
+      phone: '(16)99420-3492',
+      whatsapp: '16994203492',
+      cpf: '123.456.789-01'
+    }
+  });
+  assert.equal(maskedPatient.response.status, 201);
+  assert.equal(maskedPatient.data.patient.phone, '16994203492');
+  assert.equal(maskedPatient.data.patient.whatsapp, '16994203492');
+  assert.equal(maskedPatient.data.patient.cpf, '12345678901');
+
+  const invalidPhone = await safeRequest('/patients', {
+    method: 'POST',
+    cookie: owner.cookie,
+    body: {
+      name: 'Paciente Telefone Invalido',
+      phone: 'abc123'
+    }
+  });
+  assert.equal(invalidPhone.response.status, 400);
+  assert.equal(invalidPhone.data.error, 'INVALID_PHONE');
+
+  const invalidCpf = await safeRequest('/patients', {
+    method: 'POST',
+    cookie: owner.cookie,
+    body: {
+      name: 'Paciente CPF Invalido',
+      cpf: '123'
+    }
+  });
+  assert.equal(invalidCpf.response.status, 400);
+  assert.equal(invalidCpf.data.error, 'INVALID_CPF');
+
+  const tooLongName = await safeRequest('/patients', {
+    method: 'POST',
+    cookie: owner.cookie,
+    body: {
+      name: 'A'.repeat(161)
+    }
+  });
+  assert.equal(tooLongName.response.status, 400);
+  assert.equal(tooLongName.data.error, 'FIELD_TOO_LONG');
+});
+
 test('operational list endpoints return pagination metadata', async () => {
   const owner = await registerAndLogin('list-pagination-owner');
   const createPatient = await safeRequest('/patients', {
