@@ -130,6 +130,32 @@ O sistema foi desenhado para evitar vazamento entre psicologos.
 - Containers: Docker Compose.
 - Servidor frontend em producao: Nginx.
 
+## Imagens No Docker Hub
+
+O projeto possui imagens publicadas no Docker Hub para executar em containers sem precisar buildar localmente.
+
+Backend:
+
+```text
+fransmorato/gestao-clinica-backend:v0.1.0
+fransmorato/gestao-clinica-backend:latest
+```
+
+Frontend:
+
+```text
+fransmorato/gestao-clinica-frontend:v0.1.0
+fransmorato/gestao-clinica-frontend:latest
+```
+
+Banco de dados:
+
+```text
+mysql:8.4
+```
+
+O MySQL usa a imagem oficial, portanto nao ha imagem customizada do banco no Docker Hub.
+
 ## Estrutura Do Projeto
 
 ```text
@@ -161,6 +187,93 @@ URLs padrao:
 - Frontend: `http://localhost:5173`
 - Backend: `http://localhost:3000`
 - Health check: `http://localhost:3000/api/health`
+
+## Como Rodar Usando As Imagens Do Docker Hub
+
+Para usar as imagens publicadas, crie um `docker-compose.hub.yml` semelhante a este:
+
+```yaml
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: gestao_clinica
+      MYSQL_USER: gestao_app
+      MYSQL_PASSWORD: troque-esta-senha
+      MYSQL_ROOT_PASSWORD: troque-esta-senha-root
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: fransmorato/gestao-clinica-backend:v0.1.0
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: gestao_clinica
+      DB_USER: gestao_app
+      DB_PASSWORD: troque-esta-senha
+      FRONTEND_ORIGIN: http://localhost:8080
+      SESSION_SECRET: troque-por-um-segredo-longo
+      APP_ENCRYPTION_KEY: troque-por-chave-base64-32-bytes
+      APP_HASH_KEY: troque-por-um-segredo-hmac-longo
+      SESSION_TTL_HOURS: 8
+    volumes:
+      - ./database:/database:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    image: fransmorato/gestao-clinica-frontend:v0.1.0
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+```
+
+Depois execute:
+
+```powershell
+docker compose -f docker-compose.hub.yml up -d
+```
+
+Acesse:
+
+```text
+http://localhost:8080
+```
+
+Para aplicar migrations:
+
+```powershell
+docker compose -f docker-compose.hub.yml exec -T backend npm run db:migrate
+```
+
+Para criar o primeiro administrador:
+
+```powershell
+docker compose -f docker-compose.hub.yml exec -T `
+  -e ADMIN_NAME="Admin Local" `
+  -e ADMIN_EMAIL="admin.local@gestao.dev" `
+  -e ADMIN_PASSWORD="AdminTeste123" `
+  backend npm run admin:create
+```
+
+Observacao: se voce usar o compose acima em outra pasta, copie tambem a pasta `database/` do projeto para que o schema inicial e as migrations estejam disponiveis no container.
 
 ## Criar Administrador Local
 
@@ -305,6 +418,23 @@ docker compose --env-file .env.production -f docker-compose.prod.yml exec -T bac
 ```
 
 O frontend de producao e servido por Nginx e acessa a API via `/api`.
+
+Se preferir usar as imagens ja publicadas no Docker Hub, substitua os blocos `build:` do `docker-compose.prod.yml` por:
+
+```yaml
+backend:
+  image: fransmorato/gestao-clinica-backend:v0.1.0
+
+frontend:
+  image: fransmorato/gestao-clinica-frontend:v0.1.0
+```
+
+Em seguida rode:
+
+```powershell
+docker compose --env-file .env.production -f docker-compose.prod.yml pull
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d
+```
 
 ## Backup Rapido
 
