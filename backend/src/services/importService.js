@@ -18,6 +18,7 @@ import { encryptField } from '../security/cryptoService.js';
 import { AppError } from '../utils/AppError.js';
 import {
   FIELD_LIMITS,
+  digitsOnly,
   limitText,
   permissiveCpf,
   permissiveEmail,
@@ -90,7 +91,7 @@ function mapOldPatient(oldPatient) {
     name: limitText(oldPatient.name || 'Paciente importado', FIELD_LIMITS.name) || 'Paciente importado',
     dob: oldPatient.dob,
     cpf: permissiveCpf(oldPatient.cpf),
-    rg: limitText(oldPatient.rg, FIELD_LIMITS.rg),
+    rg: digitsOnly(oldPatient.rg).slice(0, FIELD_LIMITS.rg),
     phone: permissivePhone(oldPatient.phone),
     whatsapp: permissivePhone(oldPatient.whatsapp),
     email: permissiveEmail(oldPatient.email),

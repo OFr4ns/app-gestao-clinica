@@ -6,10 +6,17 @@ export const fieldLimits = {
   password: 128,
   recordNumber: 60,
   cpf: 11,
-  rg: 30,
+  rg: 9,
   phone: 11,
   profession: 120,
+  civilStatus: 60,
+  address: 255,
+  city: 120,
+  state: 60,
+  insurance: 120,
   notes: 5000,
+  emergencyName: 160,
+  emergencyRelationship: 80,
   appointmentNotes: 2000,
   financialDescription: 160,
   financialNotes: 2000,
@@ -50,6 +57,7 @@ export function statusLabel(status) {
     CASH: 'Dinheiro',
     PIX: 'Pix',
     CARD: 'Cartao',
+    TRANSFER: 'Transferencia',
     INSURANCE: 'Convenio'
   };
 

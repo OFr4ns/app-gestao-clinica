@@ -1,17 +1,25 @@
 import { today } from './utils.js';
 
 export const emptyPatient = {
+  recordNumber: '',
   name: '',
+  dob: '',
+  cpf: '',
+  rg: '',
   phone: '',
   whatsapp: '',
   email: '',
-  cpf: '',
-  dob: '',
   profession: '',
+  civilStatus: 'Solteiro(a)',
+  address: '',
   city: '',
   state: '',
+  insurance: '',
   status: 'ACTIVE',
-  notes: ''
+  notes: '',
+  emergencyName: '',
+  emergencyRelationship: '',
+  emergencyPhone: ''
 };
 
 export const emptyAppointment = {
@@ -19,7 +27,10 @@ export const emptyAppointment = {
   date: today(),
   time: '09:00',
   status: 'SCHEDULED',
-  notes: ''
+  notes: '',
+  generateFinancial: true,
+  amount: '150',
+  method: 'PIX'
 };
 
 export const emptyFinancial = {

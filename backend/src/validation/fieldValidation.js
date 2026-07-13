@@ -6,7 +6,7 @@ export const FIELD_LIMITS = {
   password: 128,
   recordNumber: 60,
   cpf: 11,
-  rg: 30,
+  rg: 9,
   phone: 11,
   profession: 120,
   civilStatus: 60,
