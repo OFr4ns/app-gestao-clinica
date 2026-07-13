@@ -15,6 +15,9 @@ export function normalizePaymentMethod(method) {
     CARTAO: 'CARD',
     CARTÃO: 'CARD',
     CARD: 'CARD',
+    TRANSFERENCIA: 'TRANSFER',
+    TRANSFERÊNCIA: 'TRANSFER',
+    TRANSFER: 'TRANSFER',
     CONVENIO: 'INSURANCE',
     CONVÊNIO: 'INSURANCE',
     INSURANCE: 'INSURANCE'

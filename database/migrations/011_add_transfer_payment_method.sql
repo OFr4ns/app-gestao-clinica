@@ -1,0 +1,2 @@
+ALTER TABLE financial_records
+  MODIFY method ENUM('CASH', 'PIX', 'CARD', 'TRANSFER', 'INSURANCE') NOT NULL;

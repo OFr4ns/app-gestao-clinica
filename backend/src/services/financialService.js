@@ -26,7 +26,7 @@ import {
 } from '../validation/fieldValidation.js';
 
 const allowedStatuses = ['PENDING', 'PAID', 'OVERDUE'];
-const allowedMethods = ['CASH', 'PIX', 'CARD', 'INSURANCE'];
+const allowedMethods = ['CASH', 'PIX', 'CARD', 'TRANSFER', 'INSURANCE'];
 
 function requirePsychologist(psychologistId) {
   if (!psychologistId) {
