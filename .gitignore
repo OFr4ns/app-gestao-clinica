@@ -35,6 +35,7 @@ mysql-data/
 *.sql
 *.dump
 *.bak
+!database/**/*.sql
 
 # OS/editor files
 .DS_Store

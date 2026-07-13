@@ -1,0 +1,19 @@
+-- Example only. Do not run before replacing the values.
+-- Generate password_hash in the backend using bcrypt before inserting an admin user.
+--
+-- INSERT INTO users (
+--   id,
+--   name,
+--   email,
+--   password_hash,
+--   role,
+--   status
+-- ) VALUES (
+--   '00000000-0000-0000-0000-000000000001',
+--   'Admin',
+--   'admin@example.com',
+--   '$2a$12$replace_with_real_bcrypt_hash',
+--   'ADMIN',
+--   'ACTIVE'
+-- );
+
