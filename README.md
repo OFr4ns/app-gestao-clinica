@@ -1,22 +1,158 @@
-# App Gestao Clinica
+# Gestao Clinica
 
-Aplicacao dedicada baseada no HTML original de gestao clinica.
+Sistema web para gestao de consultorio psicologico, criado a partir da evolucao de um arquivo HTML local para uma aplicacao dedicada com frontend, backend, banco de dados e containers Docker.
 
-Stack planejada:
+## O Que E Este Sistema
 
-- Frontend: React + Vite
-- Backend: Node.js + Express
-- Banco: MySQL
-- Driver: `mysql2/promise`
-- Containers: Docker Compose
+O Gestao Clinica e uma aplicacao para psicologos acompanharem pacientes, agenda, financeiro e historico clinico em um ambiente multiusuario.
 
-## Desenvolvimento
+Cada psicologo possui seu proprio acesso e visualiza apenas os seus dados. O sistema tambem possui um perfil administrador para gerir usuarios, acompanhar auditoria e controlar quem pode acessar a aplicacao.
 
-1. Copie `.env.example` para `.env`.
-2. Ajuste as chaves e senhas locais.
+## Problema Que Ele Resolve
+
+A versao original em HTML funcionava como uma ferramenta local, mas tinha limitacoes importantes:
+
+- dados ficavam presos ao navegador/localStorage;
+- nao havia backend nem banco de dados dedicado;
+- nao havia isolamento forte entre usuarios;
+- nao havia controle administrativo de acessos;
+- nao havia auditoria;
+- nao havia estrutura adequada para backup, producao ou crescimento;
+- dados sensiveis de pacientes e prontuarios precisavam de mais protecao.
+
+Este projeto transforma essa ideia inicial em uma aplicacao mais robusta, com persistencia em MySQL, API backend, frontend separado, Docker Compose, controle de sessoes, criptografia de campos sensiveis e separacao de dados por psicologo.
+
+## Principais Funcoes
+
+### Autenticacao
+
+- Login com e-mail e senha.
+- Sessao via cookie HTTP.
+- Protecao CSRF em operacoes sensiveis.
+- Rate limit em tentativas de login.
+- Cadastro publico desabilitado.
+
+### Administracao
+
+- Criar usuarios psicologos ou administradores.
+- Editar nome, e-mail, perfil e senha.
+- Ativar e desativar usuarios.
+- Bloquear login de usuarios inativos.
+- Revogar sessoes ao desativar usuario ou trocar senha.
+- Excluir usuarios com dupla confirmacao.
+- Impedir que o admin exclua ou desative a propria conta.
+- Impedir que o ultimo administrador ativo seja removido.
+- Visualizar eventos recentes de auditoria.
+
+### Pacientes
+
+- Cadastrar pacientes.
+- Editar dados cadastrais.
+- Ativar ou inativar pacientes.
+- Buscar pacientes por dados descriptografados.
+- Exportar dados de um paciente em JSON.
+- Excluir logicamente pacientes.
+- Paginacao com seletor de itens por pagina.
+
+### Agenda
+
+- Criar agendamentos.
+- Editar data, hora, paciente, status e observacoes.
+- Filtrar por data opcionalmente.
+- Marcar presenca.
+- Marcar falta.
+- Remover agendamentos.
+- Paginacao.
+
+### Financeiro
+
+- Criar lancamentos financeiros por paciente.
+- Controlar valor, vencimento, metodo, status, descricao e observacoes.
+- Marcar como pago.
+- Reabrir lancamento.
+- Editar e excluir lancamentos.
+- Manter valores em claro para relatorios.
+- Criptografar descricoes e observacoes.
+- Paginacao.
+
+### Historico Clinico
+
+- Registrar evolucoes ou anotacoes clinicas.
+- Filtrar por paciente.
+- Editar registros.
+- Excluir logicamente registros.
+- Criptografar titulo e anotacoes no banco.
+- Auditar acessos ao historico.
+- Paginacao.
+
+### Dashboard
+
+- Total de pacientes ativos.
+- Agendamentos do dia.
+- Recebido no mes.
+- Pendencias financeiras.
+- Proximos agendamentos.
+- Distribuicao de status da agenda.
+
+### Importacao Do HTML Legado
+
+- Gera backup JSON a partir do navegador onde o HTML antigo tinha dados salvos.
+- Importa pacientes, agendamentos, financeiro e historico para o novo sistema.
+- Vincula dados importados ao psicologo logado.
+
+### LGPD E Privacidade
+
+- Exportacao de dados de paciente.
+- Auditoria de exportacao.
+- Auditoria de acesso ao historico clinico.
+- Exclusao logica para preservar rastreabilidade.
+- Base para politica formal de retencao.
+
+## Seguranca E Isolamento
+
+O sistema foi desenhado para evitar vazamento entre psicologos.
+
+- Cada psicologo possui seu proprio `psychologistId`.
+- Consultas operacionais filtram dados pelo psicologo autenticado.
+- Outro psicologo nao deve conseguir acessar pacientes, agenda, financeiro ou historico de terceiros.
+- Dados sensiveis de pacientes e prontuarios sao criptografados no backend antes de gravar no banco.
+- Campos financeiros numericos ficam em claro para permitir somatorios e relatorios.
+- Sessoes sao armazenadas com token hasheado.
+- Operacoes sensiveis usam CSRF.
+- Administradores gerenciam acessos, mas a auditoria registra eventos relevantes.
+
+## Stack
+
+- Frontend: React + Vite.
+- Backend: Node.js + Express.
+- Banco: MySQL.
+- Driver MySQL: `mysql2/promise`.
+- Containers: Docker Compose.
+- Servidor frontend em producao: Nginx.
+
+## Estrutura Do Projeto
+
+```text
+backend/       API Node.js, rotas, services, repositories, seguranca e testes
+frontend/      Aplicacao React/Vite
+database/      Schema inicial, migrations e seeds de exemplo
+docs/          Planejamento, etapas e guias de validacao
+tools/         Scripts auxiliares, incluindo exportacao do HTML legado
+```
+
+## Como Rodar Em Desenvolvimento
+
+1. Copie o arquivo de ambiente:
+
+```powershell
+copy .env.example .env
+```
+
+2. Ajuste senhas e chaves no `.env`.
+
 3. Suba os containers:
 
-```bash
+```powershell
 docker compose up --build
 ```
 
@@ -26,7 +162,7 @@ URLs padrao:
 - Backend: `http://localhost:3000`
 - Health check: `http://localhost:3000/api/health`
 
-## Criar admin local
+## Criar Administrador Local
 
 Com os containers rodando:
 
@@ -38,15 +174,23 @@ docker compose exec -T `
   backend npm run admin:create
 ```
 
-## Gerenciar usuarios
+Depois disso, acesse `http://localhost:5173` e entre com o usuario administrador.
 
-Novos acessos devem ser criados pelo usuario administrador na tela `Administracao`.
+## Criar Usuarios
 
-O cadastro publico pela tela de login fica desabilitado.
+Novos acessos devem ser criados pelo administrador na tela `Administracao`.
 
-No painel administrativo, o admin pode criar usuarios, editar dados, redefinir senha, ativar/desativar acesso e excluir usuarios com dupla confirmacao.
+O cadastro publico pela tela de login fica desabilitado. Isso evita que pessoas criem usuarios sem autorizacao.
 
-## Importar dados do HTML legado
+No painel administrativo, o admin pode:
+
+- criar usuario;
+- editar usuario;
+- redefinir senha;
+- ativar ou desativar acesso;
+- excluir usuario com dupla confirmacao.
+
+## Importar Dados Do HTML Legado
 
 Os dados do HTML antigo ficam no `localStorage` do navegador, nao dentro do arquivo `.html`.
 
@@ -55,29 +199,42 @@ Para gerar o backup:
 1. Abra o HTML antigo no navegador onde os dados foram salvos.
 2. Pressione `F12` e abra o `Console`.
 3. Cole e execute o script em `tools/exportar-backup-html-legado.js`.
-4. Importe o arquivo `backup-gestao-clinica-legado.json` pela tela `Importacao`.
+4. O navegador baixara `backup-gestao-clinica-legado.json`.
+5. No novo sistema, entre como psicologo.
+6. Abra a tela `Importacao`.
+7. Selecione ou cole o JSON gerado.
+8. Clique em `Importar`.
 
-## Exportar dados de paciente
+## Exportar Dados De Paciente
 
-Na tela `Pacientes`, use o botao de exportacao na linha do paciente para gerar um arquivo JSON com dados cadastrais, agendamentos, financeiro e historico clinico daquele paciente.
+Na tela `Pacientes`, use o botao de exportacao na linha do paciente.
+
+O sistema gera um JSON com:
+
+- dados cadastrais;
+- agendamentos;
+- lancamentos financeiros;
+- historico clinico.
 
 A exportacao respeita o psicologo logado e registra auditoria.
 
 ## Paginacao
 
-As principais listagens usam paginacao com `page` e `pageSize`.
+As principais listagens usam `page` e `pageSize`.
 
-- Pacientes: `docs/etapa-29-paginacao-pacientes.md`.
-- Agenda, Financeiro, Historico, Usuarios e Auditoria: `docs/etapa-30-paginacao-demais-telas.md`.
+Telas com paginacao:
 
-## Testes de integracao do backend
+- Pacientes.
+- Agenda.
+- Financeiro.
+- Historico clinico.
+- Usuarios.
+- Auditoria.
 
-Com os containers rodando:
+Documentos relacionados:
 
-```powershell
-cd C:\Projetos\app-gestao-clinica\backend
-npm run test:integration
-```
+- `docs/etapa-29-paginacao-pacientes.md`
+- `docs/etapa-30-paginacao-demais-telas.md`
 
 ## Migrations
 
@@ -93,7 +250,45 @@ Se o banco ja foi criado pelo `database/init` antes do runner existir, registre 
 docker compose exec -T backend npm run db:migrate:baseline
 ```
 
-## Docker de producao
+## Testes
+
+Com os containers rodando:
+
+```powershell
+cd C:\Projetos\app-gestao-clinica\backend
+npm run test:integration
+```
+
+O que os testes cobrem:
+
+- health check;
+- isolamento entre psicologos;
+- criptografia de campos sensiveis no banco;
+- rejeicao de rotas protegidas sem autenticacao;
+- paginacao de pacientes;
+- paginacao das principais listagens;
+- cadastro publico bloqueado;
+- criacao e gestao de usuarios pelo admin;
+- protecao CSRF.
+
+Para validar o frontend:
+
+```powershell
+cd C:\Projetos\app-gestao-clinica\frontend
+npm run build
+```
+
+## Guia De Validacao Manual
+
+Use o documento abaixo para testar o sistema pela interface:
+
+```text
+docs/guia-testes-validacao-funcional.md
+```
+
+Ele descreve o que cada tela, fluxo e botao deve fazer.
+
+## Docker De Producao
 
 1. Copie `.env.production.example` para `.env.production`.
 2. Ajuste senhas, chaves e `FRONTEND_ORIGIN`.
@@ -111,7 +306,7 @@ docker compose --env-file .env.production -f docker-compose.prod.yml exec -T bac
 
 O frontend de producao e servido por Nginx e acessa a API via `/api`.
 
-## Backup rapido
+## Backup Rapido
 
 Desenvolvimento:
 
@@ -125,22 +320,30 @@ Producao:
 docker compose --env-file .env.production -f docker-compose.prod.yml exec -T mysql mysqldump -u root -p gestao_clinica > backup-gestao-clinica-prod.sql
 ```
 
-Os arquivos de backup contem dados sensiveis e devem ser protegidos.
+Arquivos de backup contem dados sensiveis e devem ser protegidos.
 
-## Checklist final
+## Checklist Antes De Usar Dados Reais
 
-Antes de usar dados reais:
-
-- Troque todos os segredos dos arquivos `.env`.
-- Guarde `APP_ENCRYPTION_KEY` fora do repositorio.
-- Crie um administrador.
-- Rode migrations.
-- Rode testes de integracao.
-- Valide backup e restore.
-- Defina politica de retencao de prontuarios.
+- Trocar todos os segredos dos arquivos `.env`.
+- Gerar uma `APP_ENCRYPTION_KEY` segura.
+- Guardar a chave de criptografia fora do repositorio.
+- Criar pelo menos um administrador.
+- Criar usuarios psicologos pelo painel admin.
+- Rodar migrations.
+- Rodar testes de integracao.
+- Validar backup e restore.
+- Validar importacao do HTML legado, se aplicavel.
+- Definir politica formal de retencao de prontuarios.
+- Definir quem pode acessar o painel administrativo.
+- Usar HTTPS em producao.
 
 ## Documentacao
 
-Os documentos de planejamento ficam em `docs/`. O fechamento operacional esta em `docs/etapa-28-revisao-final-operacao.md`.
+Os documentos de planejamento e evolucao ficam em `docs/`.
 
-Para validar manualmente o sistema, use `docs/guia-testes-validacao-funcional.md`.
+Principais documentos:
+
+- `docs/guia-testes-validacao-funcional.md`
+- `docs/etapa-28-revisao-final-operacao.md`
+- `docs/etapa-29-paginacao-pacientes.md`
+- `docs/etapa-30-paginacao-demais-telas.md`
