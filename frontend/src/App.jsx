@@ -244,9 +244,11 @@ export default function App() {
       await api(path, { method: 'POST', body: JSON.stringify(payload) });
       await loadData();
       showSuccess(successMessage);
+      return true;
     } catch (err) {
       setError(err.message);
       showError(err.message);
+      return false;
     } finally {
       setLoading(false);
     }
@@ -260,9 +262,11 @@ export default function App() {
       await api(path, { method: 'PUT', body: JSON.stringify(payload) });
       await loadData();
       showSuccess(successMessage);
+      return true;
     } catch (err) {
       setError(err.message);
       showError(err.message);
+      return false;
     } finally {
       setLoading(false);
     }
@@ -348,9 +352,11 @@ export default function App() {
       });
       await loadData();
       showSuccess('Usuario criado com sucesso.');
+      return true;
     } catch (err) {
       setError(err.message);
       showError(err.message);
+      return false;
     } finally {
       setLoading(false);
     }
@@ -367,9 +373,11 @@ export default function App() {
       });
       await loadData();
       showSuccess('Usuario atualizado com sucesso.');
+      return true;
     } catch (err) {
       setError(err.message);
       showError(err.message);
+      return false;
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@ import { Edit3, Plus, Trash2 } from 'lucide-react';
 import { EmptyState, Field, Modal, PageHeader, PaginationControls } from '../components.jsx';
 import { emptyHistory } from '../forms.js';
 import { fieldLimits, pick } from '../utils.js';
+import { validateClinicalHistoryForm } from '../validation.js';
 
 function patientLabel(patient) {
   if (!patient) {
@@ -35,8 +36,16 @@ export function ClinicalHistoryView({
 }) {
   const [editingId, setEditingId] = useState('');
   const [form, setForm] = useState(emptyHistory);
+  const [formErrors, setFormErrors] = useState([]);
+  const [submitError, setSubmitError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const selectedPatient = patients.find((patient) => patient.id === patientFilter) || null;
+
+  function updateForm(patch) {
+    setForm((current) => ({ ...current, ...patch }));
+    setFormErrors([]);
+    setSubmitError('');
+  }
 
   function openCreate() {
     if (!patientFilter) {
@@ -45,18 +54,24 @@ export function ClinicalHistoryView({
 
     setEditingId('');
     setForm({ ...emptyHistory, patientId: patientFilter });
+    setFormErrors([]);
+    setSubmitError('');
     setModalOpen(true);
   }
 
   function edit(entry) {
     setEditingId(entry.id);
     setForm(pick(entry, Object.keys(emptyHistory), emptyHistory));
+    setFormErrors([]);
+    setSubmitError('');
     setModalOpen(true);
   }
 
   function closeModal() {
     setEditingId('');
     setForm(emptyHistory);
+    setFormErrors([]);
+    setSubmitError('');
     setModalOpen(false);
   }
 
@@ -66,15 +81,29 @@ export function ClinicalHistoryView({
       ...form,
       patientId: form.patientId || patientFilter
     };
-
-    if (editingId) {
-      await onUpdate(`/clinical-history/${editingId}`, payload, 'Registro clinico atualizado com sucesso.');
-      closeModal();
+    const validationErrors = validateClinicalHistoryForm(payload);
+    if (validationErrors.length) {
+      setFormErrors(validationErrors);
+      setSubmitError('Revise os campos antes de gravar no prontuario.');
       return;
     }
 
-    await onCreate('/clinical-history', payload, 'Evolucao registrada no prontuario com sucesso.');
-    closeModal();
+    if (editingId) {
+      const saved = await onUpdate(`/clinical-history/${editingId}`, payload, 'Registro clinico atualizado com sucesso.');
+      if (saved) {
+        closeModal();
+      } else {
+        setSubmitError('Nao foi possivel atualizar a evolucao. Confira os campos e tente novamente.');
+      }
+      return;
+    }
+
+    const saved = await onCreate('/clinical-history', payload, 'Evolucao registrada no prontuario com sucesso.');
+    if (saved) {
+      closeModal();
+    } else {
+      setSubmitError('Nao foi possivel gravar a evolucao. Confira os campos e tente novamente.');
+    }
   }
 
   return (
@@ -144,15 +173,25 @@ export function ClinicalHistoryView({
           )}
         >
           <form id="clinical-history-form" className="form-stack" onSubmit={submit}>
+            {submitError && <div className="form-error">{submitError}</div>}
+            {formErrors.length > 0 && (
+              <div className="form-error-list" role="alert">
+                <strong>Corrija os campos abaixo:</strong>
+                <ul>
+                  {formErrors.map((message) => <li key={message}>{message}</li>)}
+                </ul>
+              </div>
+            )}
+
             <div className="two-columns">
               <Field label="Data do Atendimento">
-                <input type="date" value={form.serviceDate} onChange={(event) => setForm({ ...form, serviceDate: event.target.value })} required />
+                <input type="date" value={form.serviceDate} onChange={(event) => updateForm({ serviceDate: event.target.value })} required />
               </Field>
               <Field label="Titulo da Sessao / ID">
                 <input
                   maxLength={fieldLimits.clinicalTitle}
                   value={form.title || ''}
-                  onChange={(event) => setForm({ ...form, title: event.target.value })}
+                  onChange={(event) => updateForm({ title: event.target.value })}
                   placeholder="Ex: Sessao 04 - Analise Comportamental"
                   required
                 />
@@ -164,7 +203,7 @@ export function ClinicalHistoryView({
                 className="clinical-notes-input"
                 maxLength={fieldLimits.clinicalNotes}
                 value={form.notes || ''}
-                onChange={(event) => setForm({ ...form, notes: event.target.value })}
+                onChange={(event) => updateForm({ notes: event.target.value })}
                 placeholder="Escreva detalhadamente a evolucao do paciente baseado na abordagem terapeutica adotada..."
                 required
               />

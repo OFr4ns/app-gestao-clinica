@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Edit3, FileDown, Plus, Search, Trash2 } from 'lucide-react';
 import { Badge, EmptyState, Field, Modal, PageHeader, PaginationControls } from '../components.jsx';
 import { emptyPatient } from '../forms.js';
-import { fieldLimits, limitDigits, pick, statusLabel } from '../utils.js';
+import { fieldLimits, limitDigits, pick } from '../utils.js';
+import { validatePatientForm } from '../validation.js';
 
 function calculateAge(dob) {
   if (!dob) {
@@ -48,35 +49,65 @@ export function PatientsView({
 }) {
   const [editingId, setEditingId] = useState('');
   const [form, setForm] = useState(emptyPatient);
+  const [formErrors, setFormErrors] = useState([]);
+  const [submitError, setSubmitError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+
+  function updateForm(patch) {
+    setForm((current) => ({ ...current, ...patch }));
+    setFormErrors([]);
+    setSubmitError('');
+  }
 
   function openCreate() {
     setEditingId('');
     setForm(emptyPatient);
+    setFormErrors([]);
+    setSubmitError('');
     setModalOpen(true);
   }
 
   function edit(patient) {
     setEditingId(patient.id);
     setForm(pick(patient, Object.keys(emptyPatient), emptyPatient));
+    setFormErrors([]);
+    setSubmitError('');
     setModalOpen(true);
   }
 
   function closeModal() {
     setEditingId('');
     setForm(emptyPatient);
+    setFormErrors([]);
+    setSubmitError('');
     setModalOpen(false);
   }
 
   async function submit(event) {
     event.preventDefault();
-    if (editingId) {
-      await onUpdate(`/patients/${editingId}`, form, 'Paciente atualizado com sucesso.');
-      closeModal();
+
+    const validationErrors = validatePatientForm(form);
+    if (validationErrors.length) {
+      setFormErrors(validationErrors);
+      setSubmitError('Revise os campos destacados antes de salvar.');
       return;
     }
-    await onCreate('/patients', form, 'Paciente cadastrado com sucesso.');
-    closeModal();
+
+    if (editingId) {
+      const saved = await onUpdate(`/patients/${editingId}`, form, 'Paciente atualizado com sucesso.');
+      if (saved) {
+        closeModal();
+      } else {
+        setSubmitError('Nao foi possivel atualizar o paciente. Confira os campos e tente novamente.');
+      }
+      return;
+    }
+    const saved = await onCreate('/patients', form, 'Paciente cadastrado com sucesso.');
+    if (saved) {
+      closeModal();
+    } else {
+      setSubmitError('Nao foi possivel cadastrar o paciente. Confira os campos e tente novamente.');
+    }
   }
 
   return (
@@ -164,6 +195,16 @@ export function PatientsView({
           )}
         >
           <form id="patient-form" className="form-stack" onSubmit={submit}>
+            {submitError && <div className="form-error">{submitError}</div>}
+            {formErrors.length > 0 && (
+              <div className="form-error-list" role="alert">
+                <strong>Corrija os campos abaixo:</strong>
+                <ul>
+                  {formErrors.map((message) => <li key={message}>{message}</li>)}
+                </ul>
+              </div>
+            )}
+
             <div className="form-grid">
               <Field label="Codigo do Prontuario (ID)">
                 <input value={form.recordNumber || 'Gerado automaticamente'} readOnly />
@@ -172,12 +213,12 @@ export function PatientsView({
                 <input
                   maxLength={fieldLimits.name}
                   value={form.name}
-                  onChange={(event) => setForm({ ...form, name: event.target.value })}
+                  onChange={(event) => updateForm({ name: event.target.value })}
                   required
                 />
               </Field>
               <Field label="Data de Nascimento *">
-                <input type="date" value={form.dob || ''} onChange={(event) => setForm({ ...form, dob: event.target.value })} required />
+                <input type="date" value={form.dob || ''} onChange={(event) => updateForm({ dob: event.target.value })} required />
               </Field>
             </div>
 
@@ -187,7 +228,7 @@ export function PatientsView({
                   inputMode="numeric"
                   maxLength={fieldLimits.cpf}
                   value={form.cpf}
-                  onChange={(event) => setForm({ ...form, cpf: limitDigits(event.target.value, fieldLimits.cpf) })}
+                  onChange={(event) => updateForm({ cpf: limitDigits(event.target.value, fieldLimits.cpf) })}
                   placeholder="419.789.708-32"
                 />
               </Field>
@@ -196,7 +237,7 @@ export function PatientsView({
                   inputMode="numeric"
                   maxLength={fieldLimits.rg}
                   value={form.rg}
-                  onChange={(event) => setForm({ ...form, rg: limitDigits(event.target.value, fieldLimits.rg) })}
+                  onChange={(event) => updateForm({ rg: limitDigits(event.target.value, fieldLimits.rg) })}
                   placeholder="12.345.678-9"
                 />
               </Field>
@@ -205,7 +246,7 @@ export function PatientsView({
                   inputMode="numeric"
                   maxLength={fieldLimits.phone}
                   value={form.phone}
-                  onChange={(event) => setForm({ ...form, phone: limitDigits(event.target.value, fieldLimits.phone) })}
+                  onChange={(event) => updateForm({ phone: limitDigits(event.target.value, fieldLimits.phone) })}
                   placeholder="Ex: 11 99999-9999"
                 />
               </Field>
@@ -214,7 +255,7 @@ export function PatientsView({
                   inputMode="numeric"
                   maxLength={fieldLimits.phone}
                   value={form.whatsapp}
-                  onChange={(event) => setForm({ ...form, whatsapp: limitDigits(event.target.value, fieldLimits.phone) })}
+                  onChange={(event) => updateForm({ whatsapp: limitDigits(event.target.value, fieldLimits.phone) })}
                   placeholder="Ex: 11 99999-9999"
                 />
               </Field>
@@ -222,13 +263,13 @@ export function PatientsView({
 
             <div className="form-grid">
               <Field label="E-mail">
-                <input type="email" maxLength={fieldLimits.email} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} />
+                <input type="email" maxLength={fieldLimits.email} value={form.email} onChange={(event) => updateForm({ email: event.target.value })} />
               </Field>
               <Field label="Profissao">
-                <input maxLength={fieldLimits.profession} value={form.profession} onChange={(event) => setForm({ ...form, profession: event.target.value })} />
+                <input maxLength={fieldLimits.profession} value={form.profession} onChange={(event) => updateForm({ profession: event.target.value })} />
               </Field>
               <Field label="Estado Civil">
-                <select value={form.civilStatus} onChange={(event) => setForm({ ...form, civilStatus: event.target.value })}>
+                <select value={form.civilStatus} onChange={(event) => updateForm({ civilStatus: event.target.value })}>
                   <option value="Solteiro(a)">Solteiro(a)</option>
                   <option value="Casado(a)">Casado(a)</option>
                   <option value="Divorciado(a)">Divorciado(a)</option>
@@ -240,13 +281,13 @@ export function PatientsView({
 
             <div className="form-grid">
               <Field label="Endereco Residencial">
-                <input maxLength={fieldLimits.address} value={form.address} onChange={(event) => setForm({ ...form, address: event.target.value })} />
+                <input maxLength={fieldLimits.address} value={form.address} onChange={(event) => updateForm({ address: event.target.value })} />
               </Field>
               <Field label="Cidade">
-                <input maxLength={fieldLimits.city} value={form.city} onChange={(event) => setForm({ ...form, city: event.target.value })} />
+                <input maxLength={fieldLimits.city} value={form.city} onChange={(event) => updateForm({ city: event.target.value })} />
               </Field>
               <Field label="Estado">
-                <input maxLength="2" value={form.state} onChange={(event) => setForm({ ...form, state: normalizeState(event.target.value) })} />
+                <input maxLength="2" value={form.state} onChange={(event) => updateForm({ state: normalizeState(event.target.value) })} />
               </Field>
             </div>
 
@@ -255,12 +296,12 @@ export function PatientsView({
                 <input
                   maxLength={fieldLimits.insurance}
                   value={form.insurance}
-                  onChange={(event) => setForm({ ...form, insurance: event.target.value })}
+                  onChange={(event) => updateForm({ insurance: event.target.value })}
                   placeholder="Deixe em branco se for Particular"
                 />
               </Field>
               <Field label="Status do Paciente">
-                <select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}>
+                <select value={form.status} onChange={(event) => updateForm({ status: event.target.value })}>
                   <option value="ACTIVE">Ativo</option>
                   <option value="INACTIVE">Inativo</option>
                 </select>
@@ -268,7 +309,7 @@ export function PatientsView({
             </div>
 
             <Field label="Observacoes Clinicas Iniciais / Queixa Principal">
-              <textarea maxLength={fieldLimits.notes} rows="3" value={form.notes || ''} onChange={(event) => setForm({ ...form, notes: event.target.value })} />
+              <textarea maxLength={fieldLimits.notes} rows="3" value={form.notes || ''} onChange={(event) => updateForm({ notes: event.target.value })} />
             </Field>
 
             <div className="form-subsection">
@@ -278,7 +319,7 @@ export function PatientsView({
                   <input
                     maxLength={fieldLimits.emergencyName}
                     value={form.emergencyName}
-                    onChange={(event) => setForm({ ...form, emergencyName: event.target.value })}
+                    onChange={(event) => updateForm({ emergencyName: event.target.value })}
                     placeholder="Ex: Maria da Silva"
                   />
                 </Field>
@@ -286,7 +327,7 @@ export function PatientsView({
                   <input
                     maxLength={fieldLimits.emergencyRelationship}
                     value={form.emergencyRelationship}
-                    onChange={(event) => setForm({ ...form, emergencyRelationship: event.target.value })}
+                    onChange={(event) => updateForm({ emergencyRelationship: event.target.value })}
                     placeholder="Ex: Conjuge, Mae, Amigo"
                   />
                 </Field>
@@ -295,7 +336,7 @@ export function PatientsView({
                     inputMode="numeric"
                     maxLength={fieldLimits.phone}
                     value={form.emergencyPhone}
-                    onChange={(event) => setForm({ ...form, emergencyPhone: limitDigits(event.target.value, fieldLimits.phone) })}
+                    onChange={(event) => updateForm({ emergencyPhone: limitDigits(event.target.value, fieldLimits.phone) })}
                     placeholder="Ex: 11 99999-9999"
                   />
                 </Field>

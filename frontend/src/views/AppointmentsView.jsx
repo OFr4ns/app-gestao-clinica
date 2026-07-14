@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { CheckCircle2, Edit3, Plus, Trash2, XCircle } from 'lucide-react';
 import { Badge, EmptyState, Field, Modal, PageHeader, PaginationControls } from '../components.jsx';
 import { emptyAppointment } from '../forms.js';
-import { pick, statusLabel } from '../utils.js';
+import { fieldLimits, pick, statusLabel } from '../utils.js';
+import { validateAppointmentForm } from '../validation.js';
 
 function patientLabel(patient) {
   if (!patient) {
@@ -48,11 +49,21 @@ export function AppointmentsView({
 }) {
   const [editingId, setEditingId] = useState('');
   const [form, setForm] = useState(emptyAppointment);
+  const [formErrors, setFormErrors] = useState([]);
+  const [submitError, setSubmitError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+
+  function updateForm(patch) {
+    setForm((current) => ({ ...current, ...patch }));
+    setFormErrors([]);
+    setSubmitError('');
+  }
 
   function openCreate() {
     setEditingId('');
     setForm(emptyAppointment);
+    setFormErrors([]);
+    setSubmitError('');
     setModalOpen(true);
   }
 
@@ -63,36 +74,54 @@ export function AppointmentsView({
       ...pick(appointment, ['patientId', 'date', 'time', 'status', 'notes'], emptyAppointment),
       generateFinancial: false
     });
+    setFormErrors([]);
+    setSubmitError('');
     setModalOpen(true);
   }
 
   function closeModal() {
     setEditingId('');
     setForm(emptyAppointment);
+    setFormErrors([]);
+    setSubmitError('');
     setModalOpen(false);
   }
 
   async function submit(event) {
     event.preventDefault();
+    const validationErrors = validateAppointmentForm(form, { includeFinancial: !editingId });
+    if (validationErrors.length) {
+      setFormErrors(validationErrors);
+      setSubmitError('Revise os campos antes de salvar o agendamento.');
+      return;
+    }
 
     if (editingId) {
-      await onUpdate(
+      const saved = await onUpdate(
         `/appointments/${editingId}`,
         buildAppointmentPayload(form, false),
         'Agendamento atualizado com sucesso.'
       );
-      closeModal();
+      if (saved) {
+        closeModal();
+      } else {
+        setSubmitError('Nao foi possivel atualizar o agendamento. Confira os campos e tente novamente.');
+      }
       return;
     }
 
-    await onCreate(
+    const saved = await onCreate(
       '/appointments',
       buildAppointmentPayload(form, true),
       form.generateFinancial
         ? 'Agendamento criado e lancamento financeiro gerado com sucesso.'
         : 'Agendamento criado com sucesso.'
     );
-    closeModal();
+    if (saved) {
+      closeModal();
+    } else {
+      setSubmitError('Nao foi possivel criar o agendamento. Confira os campos e tente novamente.');
+    }
   }
 
   return (
@@ -181,8 +210,18 @@ export function AppointmentsView({
           )}
         >
           <form id="appointment-form" className="form-stack" onSubmit={submit}>
+            {submitError && <div className="form-error">{submitError}</div>}
+            {formErrors.length > 0 && (
+              <div className="form-error-list" role="alert">
+                <strong>Corrija os campos abaixo:</strong>
+                <ul>
+                  {formErrors.map((message) => <li key={message}>{message}</li>)}
+                </ul>
+              </div>
+            )}
+
             <Field label="Vincular Paciente *">
-              <select value={form.patientId} onChange={(event) => setForm({ ...form, patientId: event.target.value })} required>
+              <select value={form.patientId} onChange={(event) => updateForm({ patientId: event.target.value })} required>
                 <option value="">Selecione</option>
                 {patients.map((patient) => <option value={patient.id} key={patient.id}>{patientLabel(patient)}</option>)}
               </select>
@@ -190,15 +229,15 @@ export function AppointmentsView({
 
             <div className="two-columns">
               <Field label="Data *">
-                <input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} required />
+                <input type="date" value={form.date} onChange={(event) => updateForm({ date: event.target.value })} required />
               </Field>
               <Field label="Horario *">
-                <input type="time" value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} required />
+                <input type="time" value={form.time} onChange={(event) => updateForm({ time: event.target.value })} required />
               </Field>
             </div>
 
             <Field label="Status da Consulta">
-              <select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}>
+              <select value={form.status} onChange={(event) => updateForm({ status: event.target.value })}>
                 <option value="SCHEDULED">Agendado</option>
                 <option value="CONFIRMED">Confirmado</option>
                 <option value="ATTENDED">Presenca Confirmada</option>
@@ -207,13 +246,22 @@ export function AppointmentsView({
               </select>
             </Field>
 
+            <Field label="Observacoes">
+              <textarea
+                maxLength={fieldLimits.appointmentNotes}
+                rows="3"
+                value={form.notes || ''}
+                onChange={(event) => updateForm({ notes: event.target.value })}
+              />
+            </Field>
+
             {!editingId && (
               <div className="inline-financial-card">
                 <label className="checkbox-field">
                   <input
                     type="checkbox"
                     checked={form.generateFinancial}
-                    onChange={(event) => setForm({ ...form, generateFinancial: event.target.checked })}
+                    onChange={(event) => updateForm({ generateFinancial: event.target.checked })}
                   />
                   <span>Gerar lancamento financeiro automaticamente</span>
                 </label>
@@ -227,11 +275,11 @@ export function AppointmentsView({
                         max="99999999.99"
                         step="0.01"
                         value={form.amount}
-                        onChange={(event) => setForm({ ...form, amount: event.target.value })}
+                        onChange={(event) => updateForm({ amount: event.target.value })}
                       />
                     </Field>
                     <Field label="Forma de Recebimento">
-                      <select value={form.method} onChange={(event) => setForm({ ...form, method: event.target.value })}>
+                      <select value={form.method} onChange={(event) => updateForm({ method: event.target.value })}>
                         <option value="PIX">Pix</option>
                         <option value="CASH">Dinheiro</option>
                         <option value="TRANSFER">Transferencia</option>

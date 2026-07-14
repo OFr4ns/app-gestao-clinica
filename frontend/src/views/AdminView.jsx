@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Activity, Edit3, Plus, Power, PowerOff, RefreshCcw, Save, ShieldCheck, Trash2, UserRound, UsersRound, X } from 'lucide-react';
 import { Badge, EmptyState, Field, PageHeader, PaginationControls } from '../components.jsx';
 import { fieldLimits, statusLabel } from '../utils.js';
+import { validateUserForm } from '../validation.js';
 
 const emptyUserForm = {
   name: '',
@@ -30,6 +31,14 @@ export function AdminView({
 }) {
   const [form, setForm] = useState(emptyUserForm);
   const [editingId, setEditingId] = useState('');
+  const [formErrors, setFormErrors] = useState([]);
+  const [submitError, setSubmitError] = useState('');
+
+  function updateForm(patch) {
+    setForm((current) => ({ ...current, ...patch }));
+    setFormErrors([]);
+    setSubmitError('');
+  }
 
   function edit(user) {
     setEditingId(user.id);
@@ -39,15 +48,26 @@ export function AdminView({
       password: '',
       role: user.role || 'PSYCHOLOGIST'
     });
+    setFormErrors([]);
+    setSubmitError('');
   }
 
   function cancel() {
     setEditingId('');
     setForm(emptyUserForm);
+    setFormErrors([]);
+    setSubmitError('');
   }
 
   async function submit(event) {
     event.preventDefault();
+    const validationErrors = validateUserForm(form, { editing: Boolean(editingId) });
+    if (validationErrors.length) {
+      setFormErrors(validationErrors);
+      setSubmitError('Revise os campos antes de salvar o usuario.');
+      return;
+    }
+
     const payload = {
       name: form.name,
       email: form.email,
@@ -56,13 +76,21 @@ export function AdminView({
     };
 
     if (editingId) {
-      await onUpdateUser(editingId, payload);
-      cancel();
+      const saved = await onUpdateUser(editingId, payload);
+      if (saved) {
+        cancel();
+      } else {
+        setSubmitError('Nao foi possivel atualizar o usuario. Confira os campos e tente novamente.');
+      }
       return;
     }
 
-    await onCreateUser({ ...payload, password: form.password });
-    cancel();
+    const saved = await onCreateUser({ ...payload, password: form.password });
+    if (saved) {
+      cancel();
+    } else {
+      setSubmitError('Nao foi possivel criar o usuario. Confira os campos e tente novamente.');
+    }
   }
 
   return (
@@ -83,10 +111,19 @@ export function AdminView({
             <h3>{editingId ? 'Editar usuario' : 'Novo usuario'}</h3>
             {editingId && <button className="icon-button" type="button" onClick={cancel} title="Cancelar edicao"><X size={17} /></button>}
           </div>
-          <Field label="Nome"><input maxLength={fieldLimits.name} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></Field>
-          <Field label="E-mail"><input type="email" maxLength={fieldLimits.email} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required /></Field>
+          {submitError && <div className="form-error">{submitError}</div>}
+          {formErrors.length > 0 && (
+            <div className="form-error-list" role="alert">
+              <strong>Corrija os campos abaixo:</strong>
+              <ul>
+                {formErrors.map((message) => <li key={message}>{message}</li>)}
+              </ul>
+            </div>
+          )}
+          <Field label="Nome"><input maxLength={fieldLimits.name} value={form.name} onChange={(event) => updateForm({ name: event.target.value })} required /></Field>
+          <Field label="E-mail"><input type="email" maxLength={fieldLimits.email} value={form.email} onChange={(event) => updateForm({ email: event.target.value })} required /></Field>
           <Field label="Perfil">
-            <select value={form.role} onChange={(event) => setForm({ ...form, role: event.target.value })}>
+            <select value={form.role} onChange={(event) => updateForm({ role: event.target.value })}>
               <option value="PSYCHOLOGIST">Psicologo</option>
               <option value="ADMIN">Admin</option>
             </select>
@@ -97,7 +134,7 @@ export function AdminView({
               minLength={8}
               maxLength={fieldLimits.password}
               value={form.password}
-              onChange={(event) => setForm({ ...form, password: event.target.value })}
+              onChange={(event) => updateForm({ password: event.target.value })}
               required={!editingId}
               placeholder={editingId ? 'Preencha apenas para alterar' : ''}
             />
