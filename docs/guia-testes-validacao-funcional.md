@@ -54,8 +54,16 @@ Em todas as telas:
 - A exclusao remove o item das listagens, mas mantem registro interno quando aplicavel.
 - Campos de texto devem respeitar limite maximo de caracteres.
 - Campos numericos, como telefone, WhatsApp e CPF, devem aceitar apenas numeros quando digitados na interface.
+- Quando uma validacao falhar, o formulario ou modal deve permanecer aberto com os dados digitados.
+- Uma lista so deve atualizar depois que a API confirmar sucesso.
 
 ## Tela de login
+
+Resultado visual esperado:
+
+- A tela deve ter layout dividido em desktop, com formulario de acesso e area visual institucional.
+- Em telas menores, o layout deve se adaptar sem cortar campos.
+- Nao deve haver cadastro publico, login social ou link de redefinicao de senha.
 
 ### Campo E-mail
 
@@ -75,7 +83,7 @@ Acao:
 
 Resultado esperado:
 
-- A senha deve ter no minimo 8 caracteres.
+- A senha deve ser obrigatoria.
 - Senha incorreta deve impedir login e mostrar erro.
 
 ### Botao Entrar
@@ -628,6 +636,11 @@ Campos:
 - Titulo: obrigatorio.
 - Anotacoes: obrigatorio.
 
+Resultado esperado em erro:
+
+- Se algum campo obrigatorio estiver vazio, o modal deve permanecer aberto.
+- O sistema deve mostrar mensagem clara e preservar o texto ja digitado.
+
 ### Botao Registrar
 
 Acao:
@@ -640,6 +653,11 @@ Resultado esperado:
 - Mensagem `Registro clinico criado com sucesso.` deve aparecer.
 - Registro deve aparecer na lista.
 - Paciente selecionado deve permanecer no formulario para facilitar novos registros.
+
+Validacao de seguranca:
+
+- O registro deve ser gravado no banco em colunas criptografadas.
+- Titulo e anotacoes nao devem aparecer em texto puro diretamente na tabela `clinical_history`.
 
 ### Botao Editar registro
 
@@ -686,6 +704,34 @@ Resultado esperado:
 - Sistema deve pedir confirmacao.
 - Ao confirmar, registro deve sair da lista.
 - Mensagem de sucesso deve aparecer.
+
+## Relatorios
+
+### Cards operacionais
+
+Acao:
+
+- Criar agendamentos com status de presenca, falta e pendente.
+- Criar agendamentos futuros.
+- Abrir a tela `Relatorios`.
+
+Resultado esperado:
+
+- Card `Presencas` deve mostrar a quantidade de sessoes atendidas.
+- Card `Faltas` deve mostrar a quantidade de faltas.
+- Card `Pendentes` deve mostrar sessoes agendadas, confirmadas ou reagendadas.
+- Card `Consultas Futuras` deve mostrar pendencias com data igual ou posterior ao dia atual.
+
+### Barras percentuais
+
+Acao:
+
+- Comparar os numeros dos cards com as barras da tela.
+
+Resultado esperado:
+
+- Percentuais de presenca, falta, pendencia e futuras devem ser coerentes com o total historico de atendimentos.
+- Resumo financeiro deve mostrar recebido, aberto/atraso, adimplencia e inadimplencia.
 
 ## Importacao
 
@@ -972,6 +1018,8 @@ Acao:
 Resultado esperado:
 
 - O navegador deve bloquear o envio ou o sistema deve mostrar erro.
+- O modal ou formulario nao deve fechar.
+- Os dados ja digitados devem continuar visiveis.
 
 ### Limites e formatos dos campos
 
@@ -985,6 +1033,7 @@ Acao:
 Resultado esperado:
 
 - Telefone, WhatsApp e CPF devem manter apenas numeros na interface.
+- RG deve aceitar apenas numeros e respeitar o limite de 9 digitos.
 - Backend deve rejeitar telefone com quantidade invalida de digitos.
 - Backend deve rejeitar CPF com quantidade invalida de digitos.
 - Backend deve rejeitar textos acima do limite permitido.
@@ -1034,6 +1083,7 @@ Resultado esperado:
 
 - Todos os testes devem passar.
 - O teste de isolamento deve confirmar que dados de um psicologo nao vazam para outro.
+- O teste de prontuario deve confirmar que titulo e anotacoes ficam criptografados no banco.
 
 Rodar build do frontend:
 
@@ -1060,6 +1110,8 @@ Considere o sistema validado quando:
 - Agendamentos podem ser criados, filtrados, editados, marcados como presenca/falta e removidos.
 - Lancamentos financeiros podem ser criados, pagos/reabertos, editados e removidos.
 - Historico clinico pode ser criado, filtrado, editado e removido.
+- Relatorios mostram presencas, faltas, pendentes e consultas futuras.
+- Prontuario clinico fica criptografado no banco.
 - Importacao reconhece JSON valido e rejeita JSON invalido.
 - Admin visualiza usuarios e auditoria.
 - Um psicologo nao visualiza dados de outro.

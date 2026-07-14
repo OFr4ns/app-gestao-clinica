@@ -27,6 +27,7 @@ Este projeto transforma essa ideia inicial em uma aplicacao mais robusta, com pe
 ### Autenticacao
 
 - Login com e-mail e senha.
+- Tela de login responsiva com acesso apenas para usuarios autorizados.
 - Sessao via cookie HTTP.
 - Protecao CSRF em operacoes sensiveis.
 - Rate limit em tentativas de login.
@@ -50,7 +51,8 @@ Este projeto transforma essa ideia inicial em uma aplicacao mais robusta, com pe
 - Editar dados cadastrais.
 - Ativar ou inativar pacientes.
 - Buscar pacientes por dados descriptografados.
-- Validar limites de campos.
+- Validar limites e formatos de campos no frontend e no backend.
+- Manter o modal aberto e exibir erro quando a API rejeitar o cadastro ou edicao.
 - Normalizar telefone, WhatsApp e CPF para salvar apenas numeros.
 - Exportar dados de um paciente em JSON.
 - Excluir logicamente pacientes.
@@ -61,6 +63,7 @@ Este projeto transforma essa ideia inicial em uma aplicacao mais robusta, com pe
 - Criar agendamentos.
 - Editar data, hora, paciente, status e observacoes.
 - Filtrar por data opcionalmente.
+- Validar paciente, data, hora, status, valor financeiro e observacoes antes do envio.
 - Marcar presenca.
 - Marcar falta.
 - Remover agendamentos.
@@ -70,6 +73,7 @@ Este projeto transforma essa ideia inicial em uma aplicacao mais robusta, com pe
 
 - Criar lancamentos financeiros por paciente.
 - Controlar valor, vencimento, metodo, status, descricao e observacoes.
+- Validar valores, datas, metodo, status e limites de texto antes do envio.
 - Marcar como pago.
 - Reabrir lancamento.
 - Editar e excluir lancamentos.
@@ -77,14 +81,15 @@ Este projeto transforma essa ideia inicial em uma aplicacao mais robusta, com pe
 - Criptografar descricoes e observacoes.
 - Paginacao.
 
-### Historico Clinico
+### Prontuario Clinico
 
 - Registrar evolucoes ou anotacoes clinicas.
 - Filtrar por paciente.
 - Editar registros.
 - Excluir logicamente registros.
-- Criptografar titulo e anotacoes no banco.
-- Auditar acessos ao historico.
+- Criptografar titulo e anotacoes no banco antes da persistencia.
+- Validar que titulo e anotacoes foram criptografados antes de gravar.
+- Auditar acessos ao prontuario.
 - Paginacao.
 
 ### Dashboard
@@ -95,6 +100,13 @@ Este projeto transforma essa ideia inicial em uma aplicacao mais robusta, com pe
 - Pendencias financeiras.
 - Proximos agendamentos.
 - Distribuicao de status da agenda.
+
+### Relatorios
+
+- Total de atendimentos historicos.
+- Cards de presencas, faltas, pendentes e consultas futuras.
+- Percentuais operacionais por status.
+- Resumo financeiro com adimplencia e inadimplencia.
 
 ### Importacao Do HTML Legado
 
@@ -118,12 +130,14 @@ O sistema foi desenhado para evitar vazamento entre psicologos.
 - Consultas operacionais filtram dados pelo psicologo autenticado.
 - Outro psicologo nao deve conseguir acessar pacientes, agenda, financeiro ou historico de terceiros.
 - Dados sensiveis de pacientes e prontuarios sao criptografados no backend antes de gravar no banco.
+- O prontuario clinico usa colunas criptografadas para titulo e anotacoes, e o backend bloqueia persistencia se a criptografia nao gerar o formato esperado.
 - Campos financeiros numericos ficam em claro para permitir somatorios e relatorios.
 - Sessoes sao armazenadas com token hasheado.
 - Operacoes sensiveis usam CSRF.
 - Administradores gerenciam acessos, mas a auditoria registra eventos relevantes.
 - Entradas possuem limites maximos de caracteres no frontend e no backend.
 - Campos como telefone, WhatsApp e CPF sao normalizados para manter apenas digitos validos.
+- Falhas de validacao da API sao exibidas para o usuario sem fechar modais ou limpar os dados digitados.
 
 ## Stack
 
@@ -179,6 +193,12 @@ copy .env.example .env
 ```
 
 2. Ajuste senhas e chaves no `.env`.
+
+Para gerar uma chave forte para `APP_ENCRYPTION_KEY`:
+
+```powershell
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
 
 3. Suba os containers:
 
@@ -353,6 +373,27 @@ Documentos relacionados:
 - `docs/etapa-29-paginacao-pacientes.md`
 - `docs/etapa-30-paginacao-demais-telas.md`
 
+## Validacoes Na Interface
+
+Os formularios validam dados antes de chamar a API e tambem exibem erros retornados pelo backend.
+
+Fluxo esperado:
+
+1. Usuario preenche o formulario.
+2. Frontend valida campos obrigatorios, formatos e limites.
+3. Se houver erro, o modal/formulario permanece aberto e mostra a mensagem.
+4. Se o backend rejeitar a operacao, a tela tambem permanece aberta com os dados digitados.
+5. A lista so atualiza e o modal so fecha quando a API confirmar sucesso.
+
+Telas cobertas:
+
+- Login.
+- Pacientes.
+- Agenda.
+- Financeiro.
+- Prontuario clinico.
+- Administracao de usuarios.
+
 ## Migrations
 
 Para aplicar migrations pendentes:
@@ -385,6 +426,7 @@ O que os testes cobrem:
 - paginacao de pacientes;
 - paginacao das principais listagens;
 - limites e normalizacao de telefone, WhatsApp e CPF;
+- criptografia de prontuario clinico no banco;
 - cadastro publico bloqueado;
 - criacao e gestao de usuarios pelo admin;
 - protecao CSRF.
