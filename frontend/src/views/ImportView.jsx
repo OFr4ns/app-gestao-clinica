@@ -63,7 +63,7 @@ function normalizeImportedPayload(parsed) {
     };
   }
 
-  throw new Error('Formato de backup nao reconhecido.');
+  throw new Error('Formato de backup não reconhecido.');
 }
 
 function previewCounts(data) {
@@ -94,7 +94,7 @@ export function ImportView({ onImport, loading, lastImport }) {
       setPayload(text);
 
       if (file.name.toLowerCase().endsWith('.html')) {
-        setLocalError('O arquivo HTML nao contem os dados salvos. Use o script abaixo no sistema antigo para gerar o JSON de backup.');
+        setLocalError('O arquivo HTML não contém os dados salvos. Use o script abaixo no sistema antigo para gerar o JSON de backup.');
         return;
       }
 
@@ -104,7 +104,7 @@ export function ImportView({ onImport, loading, lastImport }) {
         setPreview(null);
       }
     };
-    reader.onerror = () => setLocalError('Nao foi possivel ler o arquivo.');
+    reader.onerror = () => setLocalError('Não foi possível ler o arquivo.');
     reader.readAsText(file, 'utf-8');
   }
 
@@ -114,7 +114,7 @@ export function ImportView({ onImport, loading, lastImport }) {
       await navigator.clipboard.writeText(legacyExportScript);
       setCopyMessage('Script copiado.');
     } catch {
-      setCopyMessage('Nao foi possivel copiar automaticamente. Selecione e copie o script manualmente.');
+      setCopyMessage('Não foi possível copiar automaticamente. Selecione e copie o script manualmente.');
     }
   }
 
@@ -135,26 +135,26 @@ export function ImportView({ onImport, loading, lastImport }) {
       const data = normalizeImportedPayload(JSON.parse(payload));
       await onImport({ sourceFilename, data });
     } catch (err) {
-      setLocalError(err.message.includes('JSON') || err instanceof SyntaxError ? 'JSON invalido.' : err.message);
+      setLocalError(err.message.includes('JSON') || err instanceof SyntaxError ? 'JSON inválido.' : err.message);
     }
   }
 
   return (
     <div className="view-stack">
-      <div className="toolbar"><PageHeader title="Configuracoes Globais" /></div>
+      <div className="toolbar"><PageHeader title="Configurações Globais" /></div>
       <section className="split-layout">
         <form className="section form-stack" onSubmit={submit}>
-          <h3>Importacao de Dados Legados</h3>
+          <h3>Importação de Dados Legados</h3>
           <Field label="Arquivo"><input type="file" accept="application/json,.json,text/html,.html" onChange={readFile} /></Field>
           <Field label="Nome de origem"><input value={sourceFilename} onChange={(event) => setSourceFilename(event.target.value)} /></Field>
-          <Field label="Conteudo JSON"><textarea className="json-input" value={payload} onChange={(event) => updatePayload(event.target.value)} required /></Field>
+          <Field label="Conteúdo JSON"><textarea className="json-input" value={payload} onChange={(event) => updatePayload(event.target.value)} required /></Field>
           {preview && (
             <div className="import-result">
               <Badge tone="success">Backup reconhecido</Badge>
               <span>Pacientes: {preview.patients}</span>
               <span>Agendamentos: {preview.appointments}</span>
               <span>Financeiro: {preview.financials}</span>
-              <span>Prontuario: {preview.history}</span>
+              <span>Prontuário: {preview.history}</span>
             </div>
           )}
           {localError && <div className="form-error">{localError}</div>}
@@ -162,7 +162,7 @@ export function ImportView({ onImport, loading, lastImport }) {
         </form>
         <div className="section">
           <h3>Gerar backup no HTML antigo</h3>
-          <p className="muted">Abra o sistema antigo no navegador onde os dados estao salvos, pressione F12, cole este script no Console e execute. Ele baixa um arquivo JSON para importar aqui.</p>
+          <p className="muted">Abra o sistema antigo no navegador onde os dados estão salvos, pressione F12, cole este script no Console e execute. Ele baixa um arquivo JSON para importar aqui.</p>
           <textarea className="json-input" readOnly value={legacyExportScript} />
           <button className="primary-button" type="button" onClick={copyScript}><Clipboard size={17} />Copiar script</button>
           {copyMessage && <div className="empty-state">{copyMessage}</div>}
@@ -170,7 +170,7 @@ export function ImportView({ onImport, loading, lastImport }) {
       </section>
 
       <section className="section">
-        <h3>Ultima importacao</h3>
+        <h3>Última importação</h3>
           {lastImport ? (
             <div className="import-result">
               <Badge tone={lastImport.status === 'COMPLETED' ? 'success' : 'warning'}>{lastImport.status}</Badge>
@@ -178,9 +178,9 @@ export function ImportView({ onImport, loading, lastImport }) {
               <span>Pacientes: {lastImport.counts?.patients || 0}</span>
               <span>Agendamentos: {lastImport.counts?.appointments || 0}</span>
               <span>Financeiro: {lastImport.counts?.financials || 0}</span>
-              <span>Prontuario: {lastImport.counts?.history || 0}</span>
+              <span>Prontuário: {lastImport.counts?.history || 0}</span>
             </div>
-          ) : <EmptyState>Nenhuma importacao executada nesta sessao.</EmptyState>}
+          ) : <EmptyState>Nenhuma importação executada nesta sessão.</EmptyState>}
       </section>
     </div>
   );

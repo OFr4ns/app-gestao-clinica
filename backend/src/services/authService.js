@@ -47,11 +47,11 @@ function toMySqlDateTime(date) {
 
 export async function registerPsychologist({ name, email, password }) {
   if (!name || !email || !password) {
-    throw new AppError('Name, email and password are required', 400, 'VALIDATION_ERROR');
+    throw new AppError('Nome, e-mail e senha são obrigatórios', 400, 'VALIDATION_ERROR');
   }
 
   if (password.length < 8) {
-    throw new AppError('Password must have at least 8 characters', 400, 'WEAK_PASSWORD');
+    throw new AppError('Senha deve ter pelo menos 8 caracteres', 400, 'WEAK_PASSWORD');
   }
 
   assertMaxLength(password, FIELD_LIMITS.password, 'Senha');
@@ -60,7 +60,7 @@ export async function registerPsychologist({ name, email, password }) {
   const existing = await findUserByEmail(normalizedEmail);
 
   if (existing) {
-    throw new AppError('Email already registered', 409, 'EMAIL_ALREADY_REGISTERED');
+    throw new AppError('E-mail já cadastrado', 409, 'EMAIL_ALREADY_REGISTERED');
   }
 
   const user = await createPsychologistUser({
@@ -75,20 +75,20 @@ export async function registerPsychologist({ name, email, password }) {
 
 export async function login({ email, password }) {
   if (!email || !password) {
-    throw new AppError('Email and password are required', 400, 'VALIDATION_ERROR');
+    throw new AppError('E-mail e senha são obrigatórios', 400, 'VALIDATION_ERROR');
   }
 
   assertMaxLength(password, FIELD_LIMITS.password, 'Senha');
   const user = await findUserByEmail(assertEmail(email, { required: true }));
 
   if (!user || user.status !== 'ACTIVE') {
-    throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
+    throw new AppError('Credenciais inválidas', 401, 'INVALID_CREDENTIALS');
   }
 
   const validPassword = await verifyPassword(password, user.password_hash);
 
   if (!validPassword) {
-    throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
+    throw new AppError('Credenciais inválidas', 401, 'INVALID_CREDENTIALS');
   }
 
   const token = crypto.randomBytes(32).toString('base64url');

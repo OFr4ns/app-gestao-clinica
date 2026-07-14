@@ -22,10 +22,9 @@ export function loginRateLimit(req, res, next) {
   if (entry.count > MAX_ATTEMPTS) {
     return res.status(429).json({
       error: 'RATE_LIMITED',
-      message: 'Too many login attempts. Try again later.'
+      message: 'Muitas tentativas de login. Tente novamente mais tarde.'
     });
   }
 
   return next();
 }
-

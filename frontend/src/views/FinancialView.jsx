@@ -67,7 +67,7 @@ export function FinancialView({
     const validationErrors = validateFinancialForm(form);
     if (validationErrors.length) {
       setFormErrors(validationErrors);
-      setSubmitError('Revise os campos antes de salvar o lancamento.');
+      setSubmitError('Revise os campos antes de salvar o lançamento.');
       return;
     }
 
@@ -79,39 +79,39 @@ export function FinancialView({
     };
 
     if (editingId) {
-      const saved = await onUpdate(`/financials/${editingId}`, payload, 'Lancamento financeiro atualizado com sucesso.');
+      const saved = await onUpdate(`/financials/${editingId}`, payload, 'Lançamento financeiro atualizado com sucesso.');
       if (saved) {
         closeModal();
       } else {
-        setSubmitError('Nao foi possivel atualizar o lancamento. Confira os campos e tente novamente.');
+        setSubmitError('Não foi possível atualizar o lançamento. Confira os campos e tente novamente.');
       }
       return;
     }
 
-    const saved = await onCreate('/financials', payload, 'Lancamento financeiro criado com sucesso.');
+    const saved = await onCreate('/financials', payload, 'Lançamento financeiro criado com sucesso.');
     if (saved) {
       closeModal();
     } else {
-      setSubmitError('Nao foi possivel criar o lancamento. Confira os campos e tente novamente.');
+      setSubmitError('Não foi possível criar o lançamento. Confira os campos e tente novamente.');
     }
   }
 
   return (
     <div className="view-stack">
-      <div className="toolbar"><PageHeader title="Fluxo de Caixa e Inadimplencia" /></div>
+      <div className="toolbar"><PageHeader title="Fluxo de Caixa e Inadimplência" /></div>
 
       <section className="metric-grid financial-metric-grid">
-        <StatCard label="Receita Historica Total" value={money(summary?.paidTotal)} />
-        <StatCard label="Receita Mes Atual" value={money(summary?.paidCurrentMonth)} />
-        <StatCard label="Inadimplencia / Pendente" value={money(summary?.pendingTotal)} tone="danger" />
+        <StatCard label="Receita Histórica Total" value={money(summary?.paidTotal)} />
+        <StatCard label="Receita Mês Atual" value={money(summary?.paidCurrentMonth)} />
+        <StatCard label="Inadimplência / Pendente" value={money(summary?.pendingTotal)} tone="danger" />
       </section>
 
       <section className="data-card">
         <div className="data-card-header">
-          <h3>Fluxo de Lancamentos Financeiros</h3>
+          <h3>Fluxo de Lançamentos Financeiros</h3>
           <button className="primary-button" type="button" onClick={openCreate}>
             <Plus size={17} />
-            Novo Lancamento Manual
+            Novo Lançamento Manual
           </button>
         </div>
 
@@ -124,7 +124,7 @@ export function FinancialView({
                 <th>Valor</th>
                 <th>Forma</th>
                 <th>Status</th>
-                <th>Acoes</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -144,7 +144,7 @@ export function FinancialView({
                         <Edit3 size={15} />
                         Editar
                       </button>
-                      <button className="icon-button danger" type="button" onClick={() => onDelete(`/financials/${record.id}`, 'lancamento financeiro')} title="Excluir lancamento">
+                      <button className="icon-button danger" type="button" onClick={() => onDelete(`/financials/${record.id}`, 'lançamento financeiro')} title="Excluir lançamento">
                         <Trash2 size={17} />
                       </button>
                     </div>
@@ -166,7 +166,7 @@ export function FinancialView({
           footer={(
             <>
               <button className="small-button" type="button" onClick={closeModal}>Cancelar</button>
-              <button className="primary-button" type="submit" form="financial-form" disabled={loading}>Salvar Transacao</button>
+              <button className="primary-button" type="submit" form="financial-form" disabled={loading}>Salvar Transação</button>
             </>
           )}
         >
@@ -196,8 +196,8 @@ export function FinancialView({
                 <select value={form.method} onChange={(event) => updateForm({ method: event.target.value })}>
                   <option value="PIX">Pix</option>
                   <option value="CASH">Dinheiro</option>
-                  <option value="TRANSFER">Transferencia</option>
-                  <option value="CARD">Cartao</option>
+                  <option value="TRANSFER">Transferência</option>
+                  <option value="CARD">Cartão</option>
                 </select>
               </Field>
             </div>
@@ -215,16 +215,16 @@ export function FinancialView({
               </Field>
             </div>
 
-            <Field label="Descricao">
+            <Field label="Descrição">
               <input
                 maxLength={fieldLimits.financialDescription}
                 value={form.description || ''}
                 onChange={(event) => updateForm({ description: event.target.value })}
-                placeholder="Ex: Sessao, pacote, ajuste manual"
+                placeholder="Ex: Sessão, pacote, ajuste manual"
               />
             </Field>
 
-            <Field label="Observacoes">
+            <Field label="Observações">
               <textarea
                 maxLength={fieldLimits.financialNotes}
                 rows="3"

@@ -105,7 +105,7 @@ export function AppointmentsView({
       if (saved) {
         closeModal();
       } else {
-        setSubmitError('Nao foi possivel atualizar o agendamento. Confira os campos e tente novamente.');
+        setSubmitError('Não foi possível atualizar o agendamento. Confira os campos e tente novamente.');
       }
       return;
     }
@@ -114,20 +114,20 @@ export function AppointmentsView({
       '/appointments',
       buildAppointmentPayload(form, true),
       form.generateFinancial
-        ? 'Agendamento criado e lancamento financeiro gerado com sucesso.'
+        ? 'Agendamento criado e lançamento financeiro gerado com sucesso.'
         : 'Agendamento criado com sucesso.'
     );
     if (saved) {
       closeModal();
     } else {
-      setSubmitError('Nao foi possivel criar o agendamento. Confira os campos e tente novamente.');
+      setSubmitError('Não foi possível criar o agendamento. Confira os campos e tente novamente.');
     }
   }
 
   return (
     <div className="view-stack">
       <div className="toolbar">
-        <PageHeader title="Agenda e Controle de Sessoes" />
+        <PageHeader title="Agenda e Controle de Sessões" />
       </div>
 
       <section className="data-card patient-filter-card">
@@ -139,7 +139,7 @@ export function AppointmentsView({
         </div>
         <button className="primary-button" type="button" onClick={openCreate}>
           <Plus size={17} />
-          Agendar Sessao
+          Agendar Sessão
         </button>
       </section>
 
@@ -148,12 +148,12 @@ export function AppointmentsView({
           <table className="data-table">
             <thead>
               <tr>
-                <th>Horario</th>
+                <th>Horário</th>
                 <th>Data</th>
                 <th>Paciente</th>
-                <th>Status da Sessao</th>
-                <th>Presenca / Registro</th>
-                <th>Acoes</th>
+                <th>Status da Sessão</th>
+                <th>Presença / Registro</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -167,7 +167,7 @@ export function AppointmentsView({
                     <div className="table-actions">
                       <button className="small-button" type="button" onClick={() => onStatus(appointment.id, 'ATTENDED')}>
                         <CheckCircle2 size={15} />
-                        Presenca
+                        Presença
                       </button>
                       <button className="small-button danger" type="button" onClick={() => onStatus(appointment.id, 'MISSED')}>
                         <XCircle size={15} />
@@ -197,7 +197,7 @@ export function AppointmentsView({
 
       {modalOpen && (
         <Modal
-          title={editingId ? 'Editar Sessao Terapeutica' : 'Agendar Sessao Terapeutica'}
+          title={editingId ? 'Editar Sessão Terapêutica' : 'Agendar Sessão Terapêutica'}
           width="small"
           onClose={closeModal}
           footer={(
@@ -231,7 +231,7 @@ export function AppointmentsView({
               <Field label="Data *">
                 <input type="date" value={form.date} onChange={(event) => updateForm({ date: event.target.value })} required />
               </Field>
-              <Field label="Horario *">
+              <Field label="Horário *">
                 <input type="time" value={form.time} onChange={(event) => updateForm({ time: event.target.value })} required />
               </Field>
             </div>
@@ -240,13 +240,13 @@ export function AppointmentsView({
               <select value={form.status} onChange={(event) => updateForm({ status: event.target.value })}>
                 <option value="SCHEDULED">Agendado</option>
                 <option value="CONFIRMED">Confirmado</option>
-                <option value="ATTENDED">Presenca Confirmada</option>
-                <option value="MISSED">Falta Justificada/Nao Justificada</option>
+                <option value="ATTENDED">Presença Confirmada</option>
+                <option value="MISSED">Falta Justificada/Não Justificada</option>
                 <option value="RESCHEDULED">Reagendado</option>
               </select>
             </Field>
 
-            <Field label="Observacoes">
+            <Field label="Observações">
               <textarea
                 maxLength={fieldLimits.appointmentNotes}
                 rows="3"
@@ -263,12 +263,12 @@ export function AppointmentsView({
                     checked={form.generateFinancial}
                     onChange={(event) => updateForm({ generateFinancial: event.target.checked })}
                   />
-                  <span>Gerar lancamento financeiro automaticamente</span>
+                  <span>Gerar lançamento financeiro automaticamente</span>
                 </label>
 
                 {form.generateFinancial && (
                   <div className="two-columns">
-                    <Field label="Valor da Sessao (R$)">
+                    <Field label="Valor da Sessão (R$)">
                       <input
                         type="number"
                         min="0"
@@ -282,8 +282,8 @@ export function AppointmentsView({
                       <select value={form.method} onChange={(event) => updateForm({ method: event.target.value })}>
                         <option value="PIX">Pix</option>
                         <option value="CASH">Dinheiro</option>
-                        <option value="TRANSFER">Transferencia</option>
-                        <option value="CARD">Cartao</option>
+                        <option value="TRANSFER">Transferência</option>
+                        <option value="CARD">Cartão</option>
                       </select>
                     </Field>
                   </div>

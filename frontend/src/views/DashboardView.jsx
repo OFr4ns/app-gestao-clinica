@@ -27,21 +27,21 @@ export function DashboardView({ dashboard, reload }) {
       <section className="metric-grid">
         <StatCard label="Total de Pacientes" value={stats.activePatients || 0} />
         <StatCard label="Consultas Hoje" value={stats.appointmentsToday || 0} />
-        <StatCard label="Faturamento Mes" value={money(stats.paidCurrentMonth)} />
+        <StatCard label="Faturamento Mês" value={money(stats.paidCurrentMonth)} />
         <StatCard label="Valores Pendentes" value={money(stats.pendingTotal)} tone="warning" />
       </section>
 
       <section className="split-layout dashboard-panels">
         <div className="data-card">
-          <h3>Proximos Atendimentos Agendados</h3>
+          <h3>Próximos Atendimentos Agendados</h3>
           <div className="table-scroll">
             <table className="data-table dashboard-table">
               <thead>
                 <tr>
-                  <th>Horario</th>
+                  <th>Horário</th>
                   <th>Paciente</th>
                   <th>Status</th>
-                  <th>Acoes</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -60,10 +60,10 @@ export function DashboardView({ dashboard, reload }) {
         </div>
 
         <div className="data-card">
-          <h3>Distribuicao de Presenca</h3>
+          <h3>Distribuição de Presença</h3>
           <div className="report-summary">
             <DistributionRow label="Comparecimento" value={percentages.attended} />
-            <DistributionRow label="Absenteismo" value={percentages.missed} />
+            <DistributionRow label="Absenteísmo" value={percentages.missed} />
             <DistributionRow label="Pendente / Agenda" value={percentages.scheduled} />
           </div>
         </div>

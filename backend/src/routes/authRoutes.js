@@ -17,7 +17,7 @@ authRoutes.get('/auth/csrf', (req, res) => {
 authRoutes.post('/auth/register', async (req, res, next) => {
   res.status(403).json({
     error: 'PUBLIC_REGISTRATION_DISABLED',
-    message: 'Cadastro publico desabilitado. Solicite a criacao do acesso ao administrador.'
+    message: 'Cadastro público desabilitado. Solicite a criação do acesso ao administrador.'
   });
 });
 

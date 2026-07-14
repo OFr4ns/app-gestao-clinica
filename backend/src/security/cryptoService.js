@@ -8,7 +8,7 @@ function getEncryptionKey() {
   const configured = env.security.encryptionKey;
 
   if (!configured) {
-    throw new Error('APP_ENCRYPTION_KEY is required');
+    throw new Error('APP_ENCRYPTION_KEY é obrigatória');
   }
 
   const key = Buffer.from(configured, 'base64');
@@ -21,7 +21,7 @@ function getEncryptionKey() {
     return crypto.createHash('sha256').update(configured).digest();
   }
 
-  throw new Error('APP_ENCRYPTION_KEY must be a 32-byte base64 value');
+  throw new Error('APP_ENCRYPTION_KEY deve ser um valor base64 de 32 bytes');
 }
 
 export function encryptField(value) {
@@ -62,7 +62,7 @@ export function decryptField(payload) {
   const [version, ivBase64, authTagBase64, ciphertextBase64] = payload.split(':');
 
   if (version !== VERSION || !ivBase64 || !authTagBase64 || !ciphertextBase64) {
-    throw new Error('Unsupported encrypted field format');
+    throw new Error('Formato de campo criptografado não suportado');
   }
 
   const decipher = crypto.createDecipheriv(

@@ -41,13 +41,13 @@ export function money(value) {
 
 export function statusLabel(status) {
   const labels = {
-    PSYCHOLOGIST: 'Psicologo',
+    PSYCHOLOGIST: 'Psicólogo',
     ADMIN: 'Admin',
     ACTIVE: 'Ativo',
     INACTIVE: 'Inativo',
     SCHEDULED: 'Agendado',
     CONFIRMED: 'Confirmado',
-    ATTENDED: 'Presenca',
+    ATTENDED: 'Presença',
     MISSED: 'Falta',
     RESCHEDULED: 'Reagendado',
     REMOVED: 'Removido',
@@ -56,9 +56,9 @@ export function statusLabel(status) {
     OVERDUE: 'Atrasado',
     CASH: 'Dinheiro',
     PIX: 'Pix',
-    CARD: 'Cartao',
-    TRANSFER: 'Transferencia',
-    INSURANCE: 'Convenio'
+    CARD: 'Cartão',
+    TRANSFER: 'Transferência',
+    INSURANCE: 'Convênio'
   };
 
   return labels[status] || status || '-';

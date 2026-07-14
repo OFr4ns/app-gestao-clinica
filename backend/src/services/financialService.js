@@ -30,33 +30,33 @@ const allowedMethods = ['CASH', 'PIX', 'CARD', 'TRANSFER', 'INSURANCE'];
 
 function requirePsychologist(psychologistId) {
   if (!psychologistId) {
-    throw new AppError('Only psychologist users can access financial records', 403, 'FORBIDDEN');
+    throw new AppError('Apenas usuários psicólogos podem acessar registros financeiros', 403, 'FORBIDDEN');
   }
 }
 
 function validateFinancialRecord(data) {
   if (!data.patientId) {
-    throw new AppError('Patient is required', 400, 'VALIDATION_ERROR');
+    throw new AppError('Paciente é obrigatório', 400, 'VALIDATION_ERROR');
   }
 
   data.amount = normalizeMoney(data.amount);
   data.dueDate = normalizeDateField(data.dueDate, 'Vencimento');
   data.paymentDate = data.paymentDate ? normalizeDateField(data.paymentDate, 'Data de pagamento') : null;
-  data.description = assertMaxLength(data.description, FIELD_LIMITS.financialDescription, 'Descricao');
-  data.notes = assertMaxLength(data.notes, FIELD_LIMITS.financialNotes, 'Observacoes');
+  data.description = assertMaxLength(data.description, FIELD_LIMITS.financialDescription, 'Descrição');
+  data.notes = assertMaxLength(data.notes, FIELD_LIMITS.financialNotes, 'Observações');
 
   if (!data.dueDate) {
-    throw new AppError('Due date is required', 400, 'VALIDATION_ERROR');
+    throw new AppError('Data de vencimento é obrigatória', 400, 'VALIDATION_ERROR');
   }
 
   const method = normalizePaymentMethod(data.method);
   if (!allowedMethods.includes(method)) {
-    throw new AppError('Invalid payment method', 400, 'INVALID_PAYMENT_METHOD');
+    throw new AppError('Forma de pagamento inválida', 400, 'INVALID_PAYMENT_METHOD');
   }
 
   const status = normalizeFinancialStatus(data.status);
   if (!allowedStatuses.includes(status)) {
-    throw new AppError('Invalid financial status', 400, 'INVALID_STATUS');
+    throw new AppError('Status financeiro inválido', 400, 'INVALID_STATUS');
   }
 }
 
@@ -64,7 +64,7 @@ async function getScopedPatient({ patientId, psychologistId }) {
   const patientRow = await findPatientById({ id: patientId, psychologistId });
 
   if (!patientRow) {
-    throw new AppError('Patient not found', 404, 'PATIENT_NOT_FOUND');
+    throw new AppError('Paciente não encontrado', 404, 'PATIENT_NOT_FOUND');
   }
 
   return decryptPatient(patientRow);
@@ -81,7 +81,7 @@ export async function getFinancialRecords({ psychologistId, status = 'ALL', pagi
 
   const normalizedStatus = status === 'ALL' ? 'ALL' : normalizeFinancialStatus(status);
   if (normalizedStatus !== 'ALL' && !allowedStatuses.includes(normalizedStatus)) {
-    throw new AppError('Invalid financial status', 400, 'INVALID_STATUS');
+    throw new AppError('Status financeiro inválido', 400, 'INVALID_STATUS');
   }
 
   const rows = await listFinancialRecords({ psychologistId, status: normalizedStatus });
@@ -115,7 +115,7 @@ export async function getFinancialRecord({ id, psychologistId }) {
 
   const row = await findFinancialRecordById({ id, psychologistId });
   if (!row) {
-    throw new AppError('Financial record not found', 404, 'FINANCIAL_RECORD_NOT_FOUND');
+    throw new AppError('Registro financeiro não encontrado', 404, 'FINANCIAL_RECORD_NOT_FOUND');
   }
 
   return hydrateFinancialRecord(row, psychologistId);
@@ -162,7 +162,7 @@ export async function editFinancialRecord({ id, psychologistId, data }) {
   });
 
   if (!updated) {
-    throw new AppError('Financial record not found', 404, 'FINANCIAL_RECORD_NOT_FOUND');
+    throw new AppError('Registro financeiro não encontrado', 404, 'FINANCIAL_RECORD_NOT_FOUND');
   }
 
   return getFinancialRecord({ id, psychologistId });
@@ -175,7 +175,7 @@ export async function changeFinancialStatus({ id, psychologistId, status }) {
   const normalizedStatus = normalizeFinancialStatus(status);
 
   if (!allowedStatuses.includes(normalizedStatus)) {
-    throw new AppError('Invalid financial status', 400, 'INVALID_STATUS');
+    throw new AppError('Status financeiro inválido', 400, 'INVALID_STATUS');
   }
 
   const paymentDate = normalizedStatus === 'PAID'
@@ -190,7 +190,7 @@ export async function changeFinancialStatus({ id, psychologistId, status }) {
   });
 
   if (!updated) {
-    throw new AppError('Financial record not found', 404, 'FINANCIAL_RECORD_NOT_FOUND');
+    throw new AppError('Registro financeiro não encontrado', 404, 'FINANCIAL_RECORD_NOT_FOUND');
   }
 
   return getFinancialRecord({ id, psychologistId });
@@ -210,6 +210,6 @@ export async function removeFinancialRecord({ id, psychologistId }) {
 
   const deleted = await softDeleteFinancialRecord({ id, psychologistId });
   if (!deleted) {
-    throw new AppError('Financial record not found', 404, 'FINANCIAL_RECORD_NOT_FOUND');
+    throw new AppError('Registro financeiro não encontrado', 404, 'FINANCIAL_RECORD_NOT_FOUND');
   }
 }

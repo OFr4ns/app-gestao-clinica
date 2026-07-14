@@ -45,7 +45,7 @@ export function assertMaxLength(value, maxLength, label) {
   const text = cleanText(value);
 
   if (text.length > maxLength) {
-    throw new AppError(`${label} deve ter no maximo ${maxLength} caracteres`, 400, 'FIELD_TOO_LONG');
+    throw new AppError(`${label} deve ter no máximo ${maxLength} caracteres`, 400, 'FIELD_TOO_LONG');
   }
 
   return text;
@@ -55,7 +55,7 @@ export function assertRequiredMaxLength(value, maxLength, label) {
   const text = assertMaxLength(value, maxLength, label);
 
   if (!text) {
-    throw new AppError(`${label} e obrigatorio`, 400, 'VALIDATION_ERROR');
+    throw new AppError(`${label} é obrigatório`, 400, 'VALIDATION_ERROR');
   }
 
   return text;
@@ -69,7 +69,7 @@ export function normalizePhone(value, label = 'Telefone') {
   }
 
   if (![10, 11].includes(digits.length)) {
-    throw new AppError(`${label} deve conter 10 ou 11 numeros`, 400, 'INVALID_PHONE');
+    throw new AppError(`${label} deve conter 10 ou 11 números`, 400, 'INVALID_PHONE');
   }
 
   return digits;
@@ -83,7 +83,7 @@ export function normalizeCpf(value) {
   }
 
   if (digits.length !== 11) {
-    throw new AppError('CPF deve conter 11 numeros', 400, 'INVALID_CPF');
+    throw new AppError('CPF deve conter 11 números', 400, 'INVALID_CPF');
   }
 
   return digits;
@@ -93,7 +93,7 @@ export function normalizeOptionalDigits(value, maxLength, label) {
   const digits = digitsOnly(value);
 
   if (digits.length > maxLength) {
-    throw new AppError(`${label} deve ter no maximo ${maxLength} numeros`, 400, 'FIELD_TOO_LONG');
+    throw new AppError(`${label} deve ter no máximo ${maxLength} números`, 400, 'FIELD_TOO_LONG');
   }
 
   return digits;
@@ -103,11 +103,11 @@ export function assertEmail(value, { required = false } = {}) {
   const email = assertMaxLength(value, FIELD_LIMITS.email, 'E-mail').toLowerCase();
 
   if (!email && required) {
-    throw new AppError('E-mail e obrigatorio', 400, 'VALIDATION_ERROR');
+    throw new AppError('E-mail é obrigatório', 400, 'VALIDATION_ERROR');
   }
 
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    throw new AppError('E-mail invalido', 400, 'INVALID_EMAIL');
+    throw new AppError('E-mail inválido', 400, 'INVALID_EMAIL');
   }
 
   return email;
@@ -145,7 +145,7 @@ export function normalizeMoney(value) {
   const amount = Number(value);
 
   if (!Number.isFinite(amount) || amount < 0) {
-    throw new AppError('Valor financeiro invalido', 400, 'INVALID_AMOUNT');
+    throw new AppError('Valor financeiro inválido', 400, 'INVALID_AMOUNT');
   }
 
   if (amount > 99999999.99) {

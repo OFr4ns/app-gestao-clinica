@@ -118,7 +118,7 @@ function normalizeRole(role) {
 
 function normalizeStatus(status) {
   if (!['ACTIVE', 'INACTIVE'].includes(status)) {
-    throw new AppError('Status invalido', 400, 'VALIDATION_ERROR');
+    throw new AppError('Status inválido', 400, 'VALIDATION_ERROR');
   }
 
   return status;
@@ -129,11 +129,11 @@ function validateUserPayload({ name, email, password }, { passwordRequired }) {
   const normalizedEmail = assertEmail(email, { required: true });
 
   if (passwordRequired && !password) {
-    throw new AppError('Senha e obrigatoria', 400, 'VALIDATION_ERROR');
+    throw new AppError('Senha é obrigatória', 400, 'VALIDATION_ERROR');
   }
 
   if (password && password.length < 8) {
-    throw new AppError('Password must have at least 8 characters', 400, 'WEAK_PASSWORD');
+    throw new AppError('Senha deve ter pelo menos 8 caracteres', 400, 'WEAK_PASSWORD');
   }
 
   assertMaxLength(password, FIELD_LIMITS.password, 'Senha');
@@ -148,7 +148,7 @@ async function ensureEmailAvailable(email, currentUserId = '') {
   const existing = await findUserByEmail(email);
 
   if (existing && existing.id !== currentUserId) {
-    throw new AppError('Email already registered', 409, 'EMAIL_ALREADY_REGISTERED');
+    throw new AppError('E-mail já cadastrado', 409, 'EMAIL_ALREADY_REGISTERED');
   }
 }
 
@@ -159,7 +159,7 @@ async function ensureCanRemoveAdmin(user) {
 
   const remainingAdmins = await countActiveAdmins({ excludeUserId: user.id });
   if (remainingAdmins < 1) {
-    throw new AppError('Nao e permitido remover o ultimo administrador ativo', 409, 'LAST_ADMIN');
+    throw new AppError('Não é permitido remover o último administrador ativo', 409, 'LAST_ADMIN');
   }
 }
 
@@ -186,7 +186,7 @@ export async function updateAdminUserAccount({ id, adminUserId, payload }) {
   const current = await findUserById(id);
 
   if (!current) {
-    throw new AppError('Usuario nao encontrado', 404, 'USER_NOT_FOUND');
+    throw new AppError('Usuário não encontrado', 404, 'USER_NOT_FOUND');
   }
 
   const { name, email } = validateUserPayload(payload, { passwordRequired: false });
@@ -194,7 +194,7 @@ export async function updateAdminUserAccount({ id, adminUserId, payload }) {
   await ensureEmailAvailable(email, id);
 
   if (current.id === adminUserId && current.role === 'ADMIN' && nextRole !== 'ADMIN') {
-    throw new AppError('Nao e permitido remover seu proprio perfil de administrador', 409, 'SELF_ADMIN_ROLE_CHANGE');
+    throw new AppError('Não é permitido remover seu próprio perfil de administrador', 409, 'SELF_ADMIN_ROLE_CHANGE');
   }
 
   if (current.role === 'ADMIN' && nextRole !== 'ADMIN') {
@@ -220,13 +220,13 @@ export async function setAdminUserStatus({ id, adminUserId, status }) {
   const current = await findUserById(id);
 
   if (!current) {
-    throw new AppError('Usuario nao encontrado', 404, 'USER_NOT_FOUND');
+    throw new AppError('Usuário não encontrado', 404, 'USER_NOT_FOUND');
   }
 
   const nextStatus = normalizeStatus(status);
 
   if (current.id === adminUserId && nextStatus === 'INACTIVE') {
-    throw new AppError('Nao e permitido desativar o proprio usuario administrador', 409, 'SELF_DEACTIVATION');
+    throw new AppError('Não é permitido desativar o próprio usuário administrador', 409, 'SELF_DEACTIVATION');
   }
 
   if (current.role === 'ADMIN' && nextStatus === 'INACTIVE') {
@@ -246,15 +246,15 @@ export async function deleteAdminUserAccount({ id, adminUserId, confirmEmail }) 
   const current = await findUserById(id);
 
   if (!current) {
-    throw new AppError('Usuario nao encontrado', 404, 'USER_NOT_FOUND');
+    throw new AppError('Usuário não encontrado', 404, 'USER_NOT_FOUND');
   }
 
   if (current.id === adminUserId) {
-    throw new AppError('Nao e permitido excluir o proprio usuario administrador', 409, 'SELF_DELETE');
+    throw new AppError('Não é permitido excluir o próprio usuário administrador', 409, 'SELF_DELETE');
   }
 
   if (String(confirmEmail || '').trim().toLowerCase() !== current.email) {
-    throw new AppError('Confirmacao de e-mail invalida', 400, 'INVALID_DELETE_CONFIRMATION');
+    throw new AppError('Confirmação de e-mail inválida', 400, 'INVALID_DELETE_CONFIRMATION');
   }
 
   await ensureCanRemoveAdmin(current);

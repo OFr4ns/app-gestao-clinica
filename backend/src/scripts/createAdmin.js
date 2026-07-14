@@ -15,17 +15,17 @@ async function main() {
   const password = process.env.ADMIN_PASSWORD;
 
   if (!email || !password) {
-    throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD are required');
+    throw new Error('ADMIN_EMAIL e ADMIN_PASSWORD são obrigatórios');
   }
 
   if (password.length < 8) {
-    throw new Error('ADMIN_PASSWORD must have at least 8 characters');
+    throw new Error('ADMIN_PASSWORD deve ter pelo menos 8 caracteres');
   }
   assertMaxLength(password, FIELD_LIMITS.password, 'Senha');
 
   const existing = await findUserByEmail(email);
   if (existing) {
-    console.log(`Admin user already exists: ${email}`);
+    console.log(`Usuário administrador já existe: ${email}`);
     return;
   }
 
@@ -36,7 +36,7 @@ async function main() {
     passwordHash: await hashPassword(password)
   });
 
-  console.log(`Admin user created: ${user.email}`);
+  console.log(`Usuário administrador criado: ${user.email}`);
 }
 
 main()

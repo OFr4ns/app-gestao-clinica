@@ -28,7 +28,7 @@ import {
 
 function requirePsychologist(psychologistId) {
   if (!psychologistId) {
-    throw new AppError('Only psychologist users can import data', 403, 'FORBIDDEN');
+    throw new AppError('Apenas usuários psicólogos podem importar dados', 403, 'FORBIDDEN');
   }
 }
 
@@ -137,8 +137,8 @@ function mapOldHistory(oldHistory, patientId) {
   return {
     patientId,
     serviceDate: normalizeDate(oldHistory.date || oldHistory.serviceDate),
-    title: limitText(oldHistory.title || 'Evolucao importada', FIELD_LIMITS.clinicalTitle),
-    notes: limitText(oldHistory.notes || 'Sem anotacoes.', FIELD_LIMITS.clinicalNotes)
+    title: limitText(oldHistory.title || 'Evolução importada', FIELD_LIMITS.clinicalTitle),
+    notes: limitText(oldHistory.notes || 'Sem anotações.', FIELD_LIMITS.clinicalNotes)
   };
 }
 
@@ -148,7 +148,7 @@ export async function importHtmlBackup({ psychologistId, userId, payload }) {
   const backup = unwrapBackup(payload);
 
   if (!backup || !Array.isArray(backup.patients) || !Array.isArray(backup.appointments)) {
-    throw new AppError('Invalid backup format', 400, 'INVALID_BACKUP');
+    throw new AppError('Formato de backup inválido', 400, 'INVALID_BACKUP');
   }
 
   const batchId = uuid();
@@ -228,7 +228,7 @@ export async function importHtmlBackup({ psychologistId, userId, payload }) {
   } catch (err) {
     await failImportBatch({
       id: batchId,
-      errorMessageEncrypted: encryptField(err.message || 'Import failed')
+      errorMessageEncrypted: encryptField(err.message || 'Falha na importação')
     });
     throw err;
   }
@@ -243,7 +243,7 @@ export async function getImportBatch({ id, psychologistId }) {
   const batch = await findImportBatchById({ id, psychologistId });
 
   if (!batch) {
-    throw new AppError('Import batch not found', 404, 'IMPORT_BATCH_NOT_FOUND');
+    throw new AppError('Importação não encontrada', 404, 'IMPORT_BATCH_NOT_FOUND');
   }
 
   return mapImportBatch(batch);

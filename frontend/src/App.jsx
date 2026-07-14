@@ -273,7 +273,7 @@ export default function App() {
   }
 
   async function deleteResource(path, label = 'registro') {
-    if (!window.confirm(`Excluir ${label}? Esta acao remove o item das listagens, mas mantem o registro interno para auditoria quando aplicavel.`)) {
+    if (!window.confirm(`Excluir ${label}? Esta ação remove o item das listagens, mas mantém o registro interno para auditoria quando aplicável.`)) {
       return;
     }
 
@@ -283,7 +283,7 @@ export default function App() {
     try {
       await api(path, { method: 'DELETE' });
       await loadData();
-      showSuccess(`${label.charAt(0).toUpperCase()}${label.slice(1)} excluido com sucesso.`);
+      showSuccess(`${label.charAt(0).toUpperCase()}${label.slice(1)} excluído com sucesso.`);
     } catch (err) {
       setError(err.message);
       showError(err.message);
@@ -301,7 +301,7 @@ export default function App() {
         body: JSON.stringify({ status })
       });
       await loadData();
-      showSuccess(status === 'ATTENDED' ? 'Presenca registrada com sucesso.' : 'Status do agendamento atualizado.');
+      showSuccess(status === 'ATTENDED' ? 'Presença registrada com sucesso.' : 'Status do agendamento atualizado.');
     } catch (err) {
       setError(err.message);
       showError(err.message);
@@ -332,7 +332,7 @@ export default function App() {
       });
       setLastImport(data.importBatch);
       await loadData();
-      showSuccess('Importacao concluida com sucesso.');
+      showSuccess('Importação concluída com sucesso.');
     } catch (err) {
       setError(err.message);
       showError(err.message);
@@ -351,7 +351,7 @@ export default function App() {
         body: JSON.stringify(payload)
       });
       await loadData();
-      showSuccess('Usuario criado com sucesso.');
+      showSuccess('Usuário criado com sucesso.');
       return true;
     } catch (err) {
       setError(err.message);
@@ -372,7 +372,7 @@ export default function App() {
         body: JSON.stringify(payload)
       });
       await loadData();
-      showSuccess('Usuario atualizado com sucesso.');
+      showSuccess('Usuário atualizado com sucesso.');
       return true;
     } catch (err) {
       setError(err.message);
@@ -393,7 +393,7 @@ export default function App() {
         body: JSON.stringify({ status })
       });
       await loadData();
-      showSuccess(status === 'ACTIVE' ? 'Usuario ativado com sucesso.' : 'Usuario desativado com sucesso.');
+      showSuccess(status === 'ACTIVE' ? 'Usuário ativado com sucesso.' : 'Usuário desativado com sucesso.');
     } catch (err) {
       setError(err.message);
       showError(err.message);
@@ -403,11 +403,11 @@ export default function App() {
   }
 
   async function deleteAdminUser(targetUser) {
-    if (!window.confirm(`Excluir o usuario ${targetUser.email}? Esta acao remove o acesso e revoga sessoes ativas.`)) {
+    if (!window.confirm(`Excluir o usuário ${targetUser.email}? Esta ação remove o acesso e revoga sessões ativas.`)) {
       return;
     }
 
-    const confirmEmail = window.prompt(`Para confirmar a exclusao, digite o e-mail completo do usuario:\n${targetUser.email}`);
+    const confirmEmail = window.prompt(`Para confirmar a exclusão, digite o e-mail completo do usuário:\n${targetUser.email}`);
     if (confirmEmail === null) {
       return;
     }
@@ -421,7 +421,7 @@ export default function App() {
         body: JSON.stringify({ confirmEmail })
       });
       await loadData();
-      showSuccess('Usuario excluido com sucesso.');
+      showSuccess('Usuário excluído com sucesso.');
     } catch (err) {
       setError(err.message);
       showError(err.message);
@@ -451,7 +451,7 @@ export default function App() {
       link.download = `paciente-${safeName || patientId}.json`;
       link.click();
       URL.revokeObjectURL(url);
-      showSuccess('Exportacao do paciente gerada com sucesso.');
+      showSuccess('Exportação do paciente gerada com sucesso.');
     } catch (err) {
       setError(err.message);
       showError(err.message);
@@ -469,11 +469,11 @@ export default function App() {
     ['patients', 'Pacientes', UsersRound],
     ['appointments', 'Agenda', CalendarDays],
     ['financial', 'Financeiro', CreditCard],
-    ['history', 'Prontuario Clinico', FileClock],
-    ['reports', 'Relatorios', TrendingUp],
-    ['import', 'Configuracoes', Settings]
+    ['history', 'Prontuário Clínico', FileClock],
+    ['reports', 'Relatórios', TrendingUp],
+    ['import', 'Configurações', Settings]
   ];
-  const adminNavItems = [['admin', 'Administracao', ShieldCheck]];
+  const adminNavItems = [['admin', 'Administração', ShieldCheck]];
 
   if (booting) {
     return <main className="loading-page"><Activity size={28} />Carregando...</main>;
@@ -490,7 +490,7 @@ export default function App() {
       <aside className="sidebar">
         <div className="brand-mark">
           <ShieldCheck size={24} />
-          <span>Gestao Clinica</span>
+          <span>Gestão Clínica</span>
         </div>
         <nav>
           {visibleNav.map(([key, label, Icon]) => (

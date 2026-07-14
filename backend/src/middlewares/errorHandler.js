@@ -1,7 +1,7 @@
 export function notFoundHandler(req, res, next) {
   res.status(404).json({
     error: 'NOT_FOUND',
-    message: 'Resource not found'
+    message: 'Recurso não encontrado'
   });
 }
 
@@ -14,6 +14,6 @@ export function errorHandler(err, req, res, next) {
 
   res.status(status).json({
     error: err.code || 'INTERNAL_ERROR',
-    message: status >= 500 ? 'Unexpected server error' : err.message
+    message: status >= 500 ? 'Erro inesperado no servidor' : err.message
   });
 }

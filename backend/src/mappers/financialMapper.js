@@ -96,7 +96,7 @@ export function financialRowFromAppointment({ appointment, amount, method }) {
     due_date: appointment.date,
     payment_date: paid ? appointment.date : null,
     status: paid ? 'PAID' : 'PENDING',
-    description_encrypted: encryptField('Sessao terapeutica'),
+    description_encrypted: encryptField('Sessão terapêutica'),
     notes_encrypted: null
   };
 }

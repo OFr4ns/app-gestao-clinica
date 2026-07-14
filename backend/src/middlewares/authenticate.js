@@ -9,7 +9,7 @@ export async function authenticate(req, res, next) {
     if (!auth) {
       return res.status(401).json({
         error: 'UNAUTHENTICATED',
-        message: 'Authentication required'
+        message: 'Autenticação obrigatória'
       });
     }
 
@@ -20,4 +20,3 @@ export async function authenticate(req, res, next) {
     return next(err);
   }
 }
-

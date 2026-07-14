@@ -98,7 +98,7 @@ export function PatientsView({
       if (saved) {
         closeModal();
       } else {
-        setSubmitError('Nao foi possivel atualizar o paciente. Confira os campos e tente novamente.');
+        setSubmitError('Não foi possível atualizar o paciente. Confira os campos e tente novamente.');
       }
       return;
     }
@@ -106,7 +106,7 @@ export function PatientsView({
     if (saved) {
       closeModal();
     } else {
-      setSubmitError('Nao foi possivel cadastrar o paciente. Confira os campos e tente novamente.');
+      setSubmitError('Não foi possível cadastrar o paciente. Confira os campos e tente novamente.');
     }
   }
 
@@ -122,7 +122,7 @@ export function PatientsView({
           <input
             value={search}
             onChange={(event) => onSearch(event.target.value)}
-            placeholder="Pesquise por nome, N. Prontuario, CPF ou tel..."
+            placeholder="Pesquise por nome, N. Prontuário, CPF ou tel..."
           />
         </div>
         <button className="primary-button" type="button" onClick={openCreate}>
@@ -136,11 +136,11 @@ export function PatientsView({
           <table className="data-table">
             <thead>
               <tr>
-                <th>Prontuario / Nome Completo</th>
+                <th>Prontuário / Nome Completo</th>
                 <th>Idade</th>
                 <th>WhatsApp / Telefone</th>
-                <th>Convenio / Particular</th>
-                <th>Acoes</th>
+                <th>Convênio / Particular</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -148,7 +148,7 @@ export function PatientsView({
                 <tr key={patient.id}>
                   <td>
                     <div className="patient-name-cell">
-                      <span className="record-pill">{patient.recordNumber || 'Sem numero'}</span>
+                      <span className="record-pill">{patient.recordNumber || 'Sem número'}</span>
                       <strong>{patient.name || 'Sem nome'}</strong>
                     </div>
                   </td>
@@ -185,7 +185,7 @@ export function PatientsView({
 
       {modalOpen && (
         <Modal
-          title={editingId ? 'Editar Prontuario Cadastral' : 'Cadastrar Novo Paciente'}
+          title={editingId ? 'Editar Prontuário Cadastral' : 'Cadastrar Novo Paciente'}
           onClose={closeModal}
           footer={(
             <>
@@ -206,7 +206,7 @@ export function PatientsView({
             )}
 
             <div className="form-grid">
-              <Field label="Codigo do Prontuario (ID)">
+              <Field label="Código do Prontuário (ID)">
                 <input value={form.recordNumber || 'Gerado automaticamente'} readOnly />
               </Field>
               <Field label="Nome Completo *">
@@ -265,7 +265,7 @@ export function PatientsView({
               <Field label="E-mail">
                 <input type="email" maxLength={fieldLimits.email} value={form.email} onChange={(event) => updateForm({ email: event.target.value })} />
               </Field>
-              <Field label="Profissao">
+              <Field label="Profissão">
                 <input maxLength={fieldLimits.profession} value={form.profession} onChange={(event) => updateForm({ profession: event.target.value })} />
               </Field>
               <Field label="Estado Civil">
@@ -273,14 +273,14 @@ export function PatientsView({
                   <option value="Solteiro(a)">Solteiro(a)</option>
                   <option value="Casado(a)">Casado(a)</option>
                   <option value="Divorciado(a)">Divorciado(a)</option>
-                  <option value="Viuvo(a)">Viuvo(a)</option>
-                  <option value="Uniao Estavel">Uniao Estavel</option>
+                  <option value="Viuvo(a)">Viúvo(a)</option>
+                  <option value="Uniao Estavel">União Estável</option>
                 </select>
               </Field>
             </div>
 
             <div className="form-grid">
-              <Field label="Endereco Residencial">
+              <Field label="Endereço Residencial">
                 <input maxLength={fieldLimits.address} value={form.address} onChange={(event) => updateForm({ address: event.target.value })} />
               </Field>
               <Field label="Cidade">
@@ -292,7 +292,7 @@ export function PatientsView({
             </div>
 
             <div className="form-grid">
-              <Field label="Convenio / Plano de Saude">
+              <Field label="Convênio / Plano de Saúde">
                 <input
                   maxLength={fieldLimits.insurance}
                   value={form.insurance}
@@ -308,12 +308,12 @@ export function PatientsView({
               </Field>
             </div>
 
-            <Field label="Observacoes Clinicas Iniciais / Queixa Principal">
+            <Field label="Observações Clínicas Iniciais / Queixa Principal">
               <textarea maxLength={fieldLimits.notes} rows="3" value={form.notes || ''} onChange={(event) => updateForm({ notes: event.target.value })} />
             </Field>
 
             <div className="form-subsection">
-              <h4>Contato de Seguranca / Emergencia</h4>
+              <h4>Contato de Segurança / Emergência</h4>
               <div className="form-grid">
                 <Field label="Nome do Contato">
                   <input
@@ -323,12 +323,12 @@ export function PatientsView({
                     placeholder="Ex: Maria da Silva"
                   />
                 </Field>
-                <Field label="Grau de Parentesco / Vinculo">
+                <Field label="Grau de Parentesco / Vínculo">
                   <input
                     maxLength={fieldLimits.emergencyRelationship}
                     value={form.emergencyRelationship}
                     onChange={(event) => updateForm({ emergencyRelationship: event.target.value })}
-                    placeholder="Ex: Conjuge, Mae, Amigo"
+                    placeholder="Ex: Cônjuge, Mãe, Amigo"
                   />
                 </Field>
                 <Field label="Telefone do Contato">

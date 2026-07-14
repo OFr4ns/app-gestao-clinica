@@ -18,7 +18,7 @@ async function ensureCsrfToken() {
   const data = await response.json();
 
   if (!response.ok || !data.csrfToken) {
-    throw new Error('Nao foi possivel iniciar a protecao CSRF.');
+    throw new Error('Não foi possível iniciar a proteção CSRF.');
   }
 
   csrfToken = data.csrfToken;
@@ -63,7 +63,7 @@ export async function api(path, options = {}) {
   }
 
   if (!result.response.ok) {
-    throw new Error(result.data?.message || 'Nao foi possivel concluir a operacao.');
+    throw new Error(result.data?.message || 'Não foi possível concluir a operação.');
   }
 
   if (path === '/auth/login' || path === '/auth/register' || path === '/auth/logout') {

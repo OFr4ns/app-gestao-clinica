@@ -15,10 +15,10 @@ function patientLabel(patient) {
 
 function patientTitle(patient) {
   if (!patient) {
-    return 'Prontuario';
+    return 'Prontuário';
   }
 
-  return `Prontuario [${patient.recordNumber || '---'}] - ${patient.name}`;
+  return `Prontuário [${patient.recordNumber || '---'}] - ${patient.name}`;
 }
 
 export function ClinicalHistoryView({
@@ -84,36 +84,36 @@ export function ClinicalHistoryView({
     const validationErrors = validateClinicalHistoryForm(payload);
     if (validationErrors.length) {
       setFormErrors(validationErrors);
-      setSubmitError('Revise os campos antes de gravar no prontuario.');
+      setSubmitError('Revise os campos antes de gravar no prontuário.');
       return;
     }
 
     if (editingId) {
-      const saved = await onUpdate(`/clinical-history/${editingId}`, payload, 'Registro clinico atualizado com sucesso.');
+      const saved = await onUpdate(`/clinical-history/${editingId}`, payload, 'Registro clínico atualizado com sucesso.');
       if (saved) {
         closeModal();
       } else {
-        setSubmitError('Nao foi possivel atualizar a evolucao. Confira os campos e tente novamente.');
+        setSubmitError('Não foi possível atualizar a evolução. Confira os campos e tente novamente.');
       }
       return;
     }
 
-    const saved = await onCreate('/clinical-history', payload, 'Evolucao registrada no prontuario com sucesso.');
+    const saved = await onCreate('/clinical-history', payload, 'Evolução registrada no prontuário com sucesso.');
     if (saved) {
       closeModal();
     } else {
-      setSubmitError('Nao foi possivel gravar a evolucao. Confira os campos e tente novamente.');
+      setSubmitError('Não foi possível gravar a evolução. Confira os campos e tente novamente.');
     }
   }
 
   return (
     <div className="view-stack">
       <div className="toolbar">
-        <PageHeader title="Prontuario Clinico" />
+        <PageHeader title="Prontuário Clínico" />
       </div>
 
       <section className="data-card">
-        <Field label="Selecione o Paciente para visualizar o Prontuario:">
+        <Field label="Selecione o Paciente para visualizar o Prontuário:">
           <select value={patientFilter} onChange={(event) => onPatientFilterChange(event.target.value)}>
             <option value="">-- Selecione o Paciente --</option>
             {patients.map((patient) => <option value={patient.id} key={patient.id}>{patientLabel(patient)}</option>)}
@@ -127,7 +127,7 @@ export function ClinicalHistoryView({
             <h3>{patientTitle(selectedPatient)}</h3>
             <button className="primary-button" type="button" onClick={openCreate}>
               <Plus size={17} />
-              Evoluir Prontuario
+              Evoluir Prontuário
             </button>
           </div>
 
@@ -135,7 +135,7 @@ export function ClinicalHistoryView({
             {history.map((entry) => (
               <article className="clinical-entry" key={entry.id}>
                 <div>
-                  <strong>{entry.title || 'Registro clinico'}</strong>
+                  <strong>{entry.title || 'Registro clínico'}</strong>
                   <span>{entry.serviceDate}</span>
                   <p>{entry.notes}</p>
                 </div>
@@ -144,31 +144,31 @@ export function ClinicalHistoryView({
                     <Edit3 size={15} />
                     Editar
                   </button>
-                  <button className="icon-button danger" type="button" onClick={() => onDelete(`/clinical-history/${entry.id}`, 'registro clinico')} title="Excluir registro">
+                  <button className="icon-button danger" type="button" onClick={() => onDelete(`/clinical-history/${entry.id}`, 'registro clínico')} title="Excluir registro">
                     <Trash2 size={17} />
                   </button>
                 </div>
               </article>
             ))}
-            {!history.length && <EmptyState>Nenhuma evolucao clinica registrada para este paciente.</EmptyState>}
+            {!history.length && <EmptyState>Nenhuma evolução clínica registrada para este paciente.</EmptyState>}
           </div>
 
           <PaginationControls pagination={pagination} onPageChange={onPageChange} onPageSizeChange={onPageSizeChange} />
         </section>
       ) : (
         <section className="data-card">
-          <EmptyState>Selecione um paciente para visualizar o prontuario clinico.</EmptyState>
+          <EmptyState>Selecione um paciente para visualizar o prontuário clínico.</EmptyState>
         </section>
       )}
 
       {modalOpen && (
         <Modal
-          title={editingId ? 'Editar Evolucao de Prontuario' : 'Nova Evolucao de Prontuario'}
+          title={editingId ? 'Editar Evolução de Prontuário' : 'Nova Evolução de Prontuário'}
           onClose={closeModal}
           footer={(
             <>
               <button className="small-button" type="button" onClick={closeModal}>Cancelar</button>
-              <button className="primary-button" type="submit" form="clinical-history-form" disabled={loading}>Gravar no Prontuario</button>
+              <button className="primary-button" type="submit" form="clinical-history-form" disabled={loading}>Gravar no Prontuário</button>
             </>
           )}
         >
@@ -187,24 +187,24 @@ export function ClinicalHistoryView({
               <Field label="Data do Atendimento">
                 <input type="date" value={form.serviceDate} onChange={(event) => updateForm({ serviceDate: event.target.value })} required />
               </Field>
-              <Field label="Titulo da Sessao / ID">
+              <Field label="Título da Sessão / ID">
                 <input
                   maxLength={fieldLimits.clinicalTitle}
                   value={form.title || ''}
                   onChange={(event) => updateForm({ title: event.target.value })}
-                  placeholder="Ex: Sessao 04 - Analise Comportamental"
+                  placeholder="Ex: Sessão 04 - Análise Comportamental"
                   required
                 />
               </Field>
             </div>
 
-            <Field label="Evolucao Clinica / Anotacoes Teoricas (Sigilo Profissional)">
+            <Field label="Evolução Clínica / Anotações Teóricas (Sigilo Profissional)">
               <textarea
                 className="clinical-notes-input"
                 maxLength={fieldLimits.clinicalNotes}
                 value={form.notes || ''}
                 onChange={(event) => updateForm({ notes: event.target.value })}
-                placeholder="Escreva detalhadamente a evolucao do paciente baseado na abordagem terapeutica adotada..."
+                placeholder="Escreva detalhadamente a evolução do paciente baseado na abordagem terapêutica adotada..."
                 required
               />
             </Field>

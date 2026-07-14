@@ -64,7 +64,7 @@ export function AdminView({
     const validationErrors = validateUserForm(form, { editing: Boolean(editingId) });
     if (validationErrors.length) {
       setFormErrors(validationErrors);
-      setSubmitError('Revise os campos antes de salvar o usuario.');
+      setSubmitError('Revise os campos antes de salvar o usuário.');
       return;
     }
 
@@ -80,7 +80,7 @@ export function AdminView({
       if (saved) {
         cancel();
       } else {
-        setSubmitError('Nao foi possivel atualizar o usuario. Confira os campos e tente novamente.');
+        setSubmitError('Não foi possível atualizar o usuário. Confira os campos e tente novamente.');
       }
       return;
     }
@@ -89,27 +89,27 @@ export function AdminView({
     if (saved) {
       cancel();
     } else {
-      setSubmitError('Nao foi possivel criar o usuario. Confira os campos e tente novamente.');
+      setSubmitError('Não foi possível criar o usuário. Confira os campos e tente novamente.');
     }
   }
 
   return (
     <div className="view-stack">
       <div className="toolbar">
-        <PageHeader title="Administracao" />
+        <PageHeader title="Administração" />
         <button className="icon-button" type="button" onClick={reload} title="Atualizar"><RefreshCcw size={18} /></button>
       </div>
       <section className="metric-grid">
-        <div className="metric"><UsersRound size={20} /><span>Usuarios</span><strong>{summary?.users?.totalUsers || 0}</strong></div>
-        <div className="metric"><UserRound size={20} /><span>Psicologos</span><strong>{summary?.users?.psychologists || 0}</strong></div>
+        <div className="metric"><UsersRound size={20} /><span>Usuários</span><strong>{summary?.users?.totalUsers || 0}</strong></div>
+        <div className="metric"><UserRound size={20} /><span>Psicólogos</span><strong>{summary?.users?.psychologists || 0}</strong></div>
         <div className="metric"><ShieldCheck size={20} /><span>Admins</span><strong>{summary?.users?.admins || 0}</strong></div>
         <div className="metric"><Activity size={20} /><span>Eventos auditados</span><strong>{summary?.audit?.totalEvents || 0}</strong></div>
       </section>
       <section className="split-layout">
         <form className="section form-stack" onSubmit={submit}>
           <div className="section-title-row">
-            <h3>{editingId ? 'Editar usuario' : 'Novo usuario'}</h3>
-            {editingId && <button className="icon-button" type="button" onClick={cancel} title="Cancelar edicao"><X size={17} /></button>}
+            <h3>{editingId ? 'Editar usuário' : 'Novo usuário'}</h3>
+            {editingId && <button className="icon-button" type="button" onClick={cancel} title="Cancelar edição"><X size={17} /></button>}
           </div>
           {submitError && <div className="form-error">{submitError}</div>}
           {formErrors.length > 0 && (
@@ -124,11 +124,11 @@ export function AdminView({
           <Field label="E-mail"><input type="email" maxLength={fieldLimits.email} value={form.email} onChange={(event) => updateForm({ email: event.target.value })} required /></Field>
           <Field label="Perfil">
             <select value={form.role} onChange={(event) => updateForm({ role: event.target.value })}>
-              <option value="PSYCHOLOGIST">Psicologo</option>
+              <option value="PSYCHOLOGIST">Psicólogo</option>
               <option value="ADMIN">Admin</option>
             </select>
           </Field>
-          <Field label={editingId ? 'Nova senha' : 'Senha temporaria'}>
+          <Field label={editingId ? 'Nova senha' : 'Senha temporária'}>
             <input
               type="password"
               minLength={8}
@@ -139,10 +139,10 @@ export function AdminView({
               placeholder={editingId ? 'Preencha apenas para alterar' : ''}
             />
           </Field>
-          <button className="primary-button" type="submit" disabled={loading}>{editingId ? <Save size={17} /> : <Plus size={17} />}{editingId ? 'Salvar usuario' : 'Criar usuario'}</button>
+          <button className="primary-button" type="submit" disabled={loading}>{editingId ? <Save size={17} /> : <Plus size={17} />}{editingId ? 'Salvar usuário' : 'Criar usuário'}</button>
         </form>
         <div className="section">
-          <h3>Gerenciar usuarios</h3>
+          <h3>Gerenciar usuários</h3>
           <div className="list">
             {users.map((item) => (
               <div className="list-row" key={item.id}>
@@ -153,17 +153,17 @@ export function AdminView({
                 </div>
                 <div className="row-actions">
                   <Badge tone={item.status === 'ACTIVE' ? 'success' : 'default'}>{statusLabel(item.status)}</Badge>
-                  <button className="icon-button" type="button" onClick={() => edit(item)} title="Editar usuario"><Edit3 size={17} /></button>
+                  <button className="icon-button" type="button" onClick={() => edit(item)} title="Editar usuário"><Edit3 size={17} /></button>
                   {item.status === 'ACTIVE' ? (
-                    <button className="icon-button danger" type="button" onClick={() => onUpdateUserStatus(item.id, 'INACTIVE')} title="Desativar usuario" disabled={item.id === currentUser?.id}><PowerOff size={17} /></button>
+                    <button className="icon-button danger" type="button" onClick={() => onUpdateUserStatus(item.id, 'INACTIVE')} title="Desativar usuário" disabled={item.id === currentUser?.id}><PowerOff size={17} /></button>
                   ) : (
-                    <button className="icon-button" type="button" onClick={() => onUpdateUserStatus(item.id, 'ACTIVE')} title="Ativar usuario"><Power size={17} /></button>
+                    <button className="icon-button" type="button" onClick={() => onUpdateUserStatus(item.id, 'ACTIVE')} title="Ativar usuário"><Power size={17} /></button>
                   )}
-                  <button className="icon-button danger" type="button" onClick={() => onDeleteUser(item)} title="Excluir usuario" disabled={item.id === currentUser?.id}><Trash2 size={17} /></button>
+                  <button className="icon-button danger" type="button" onClick={() => onDeleteUser(item)} title="Excluir usuário" disabled={item.id === currentUser?.id}><Trash2 size={17} /></button>
                 </div>
               </div>
             ))}
-            {!users.length && <EmptyState>Nenhum usuario encontrado.</EmptyState>}
+            {!users.length && <EmptyState>Nenhum usuário encontrado.</EmptyState>}
           </div>
           <PaginationControls pagination={usersPagination} onPageChange={onUsersPageChange} onPageSizeChange={onUsersPageSizeChange} />
         </div>
@@ -174,7 +174,7 @@ export function AdminView({
           {logs.map((item) => (
             <div className="list-row" key={item.id}>
               <div><strong>{item.action}</strong><span>{item.entityType || 'sistema'} - {item.createdAt}</span></div>
-              <Badge>{item.userId ? 'usuario' : 'anonimo'}</Badge>
+              <Badge>{item.userId ? 'usuário' : 'anônimo'}</Badge>
             </div>
           ))}
           {!logs.length && <EmptyState>Nenhum evento encontrado.</EmptyState>}

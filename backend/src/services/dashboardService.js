@@ -12,7 +12,7 @@ import { AppError } from '../utils/AppError.js';
 
 function requirePsychologist(psychologistId) {
   if (!psychologistId) {
-    throw new AppError('Only psychologist users can access dashboard data', 403, 'FORBIDDEN');
+    throw new AppError('Apenas usuários psicólogos podem acessar dados do dashboard', 403, 'FORBIDDEN');
   }
 }
 

@@ -26,7 +26,7 @@ async function resolveMigrationsDir() {
     }
   }
 
-  throw new Error(`Migrations directory not found. Tried: ${migrationDirCandidates.join(', ')}`);
+  throw new Error(`Diretório de migrations não encontrado. Tentativas: ${migrationDirCandidates.join(', ')}`);
 }
 
 async function ensureMigrationsTable(connection) {
@@ -93,7 +93,7 @@ async function run() {
 
       if (applied.has(filename)) {
         if (applied.get(filename) !== hash) {
-          throw new Error(`Migration checksum mismatch: ${filename}`);
+          throw new Error(`Checksum da migration divergente: ${filename}`);
         }
         console.log(`skip ${filename}`);
         continue;

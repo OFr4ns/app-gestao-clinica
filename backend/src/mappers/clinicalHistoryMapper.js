@@ -5,7 +5,7 @@ function encryptRequiredClinicalField(value, label) {
   const encrypted = encryptField(value);
 
   if (!isEncryptedField(encrypted)) {
-    throw new Error(`${label} must be encrypted before persistence`);
+    throw new Error(`${label} deve estar criptografado antes da persistência`);
   }
 
   return encrypted;
@@ -15,8 +15,8 @@ export function toClinicalHistoryRow(data) {
   return {
     patient_id: data.patientId,
     service_date: data.serviceDate || data.date,
-    title_encrypted: encryptRequiredClinicalField(data.title, 'Clinical history title'),
-    notes_encrypted: encryptRequiredClinicalField(data.notes, 'Clinical history notes')
+    title_encrypted: encryptRequiredClinicalField(data.title, 'Título do prontuário clínico'),
+    notes_encrypted: encryptRequiredClinicalField(data.notes, 'Anotações do prontuário clínico')
   };
 }
 

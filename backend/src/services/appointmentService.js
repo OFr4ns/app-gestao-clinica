@@ -30,34 +30,34 @@ const allowedStatuses = ['SCHEDULED', 'CONFIRMED', 'ATTENDED', 'MISSED', 'RESCHE
 
 function requirePsychologist(psychologistId) {
   if (!psychologistId) {
-    throw new AppError('Only psychologist users can access appointments', 403, 'FORBIDDEN');
+    throw new AppError('Apenas usuários psicólogos podem acessar agendamentos', 403, 'FORBIDDEN');
   }
 }
 
 function validateAppointment(data) {
   if (!data.patientId) {
-    throw new AppError('Patient is required', 400, 'VALIDATION_ERROR');
+    throw new AppError('Paciente é obrigatório', 400, 'VALIDATION_ERROR');
   }
 
   data.date = normalizeDateField(data.date, 'Data do agendamento');
   data.time = normalizeTimeField(data.time);
-  data.notes = assertMaxLength(data.notes, FIELD_LIMITS.appointmentNotes, 'Observacoes');
+  data.notes = assertMaxLength(data.notes, FIELD_LIMITS.appointmentNotes, 'Observações');
 
   if (!data.date) {
-    throw new AppError('Appointment date is required', 400, 'VALIDATION_ERROR');
+    throw new AppError('Data do agendamento é obrigatória', 400, 'VALIDATION_ERROR');
   }
 
   if (!data.time) {
-    throw new AppError('Appointment time is required', 400, 'VALIDATION_ERROR');
+    throw new AppError('Horário do agendamento é obrigatório', 400, 'VALIDATION_ERROR');
   }
 
   const status = normalizeAppointmentStatus(data.status);
   if (!allowedStatuses.includes(status)) {
-    throw new AppError('Invalid appointment status', 400, 'INVALID_STATUS');
+    throw new AppError('Status do agendamento inválido', 400, 'INVALID_STATUS');
   }
 
   if (data.generateFinancial !== false && data.amount !== undefined && Number(data.amount) < 0) {
-    throw new AppError('Financial amount cannot be negative', 400, 'INVALID_AMOUNT');
+    throw new AppError('Valor financeiro não pode ser negativo', 400, 'INVALID_AMOUNT');
   }
 
   if (data.generateFinancial !== false && data.amount !== undefined) {
@@ -69,13 +69,13 @@ async function getActivePatient({ patientId, psychologistId }) {
   const row = await findPatientById({ id: patientId, psychologistId });
 
   if (!row) {
-    throw new AppError('Patient not found', 404, 'PATIENT_NOT_FOUND');
+    throw new AppError('Paciente não encontrado', 404, 'PATIENT_NOT_FOUND');
   }
 
   const patient = decryptPatient(row);
 
   if (patient.status !== 'ACTIVE') {
-    throw new AppError('Only active patients can be scheduled', 400, 'PATIENT_INACTIVE');
+    throw new AppError('Apenas pacientes ativos podem ser agendados', 400, 'PATIENT_INACTIVE');
   }
 
   return patient;
@@ -113,7 +113,7 @@ export async function getAppointment({ id, psychologistId }) {
   const row = await findAppointmentById({ id, psychologistId });
 
   if (!row) {
-    throw new AppError('Appointment not found', 404, 'APPOINTMENT_NOT_FOUND');
+    throw new AppError('Agendamento não encontrado', 404, 'APPOINTMENT_NOT_FOUND');
   }
 
   const patientRow = await findPatientById({ id: row.patient_id, psychologistId });
@@ -176,7 +176,7 @@ export async function editAppointment({ id, psychologistId, data }) {
   });
 
   if (!updated) {
-    throw new AppError('Appointment not found', 404, 'APPOINTMENT_NOT_FOUND');
+    throw new AppError('Agendamento não encontrado', 404, 'APPOINTMENT_NOT_FOUND');
   }
 
   return getAppointment({ id, psychologistId });
@@ -188,13 +188,13 @@ export async function changeAppointmentStatus({ id, psychologistId, status }) {
   const normalizedStatus = normalizeAppointmentStatus(status);
 
   if (!allowedStatuses.includes(normalizedStatus)) {
-    throw new AppError('Invalid appointment status', 400, 'INVALID_STATUS');
+    throw new AppError('Status do agendamento inválido', 400, 'INVALID_STATUS');
   }
 
   const updated = await updateAppointmentStatus({ id, psychologistId, status: normalizedStatus });
 
   if (!updated) {
-    throw new AppError('Appointment not found', 404, 'APPOINTMENT_NOT_FOUND');
+    throw new AppError('Agendamento não encontrado', 404, 'APPOINTMENT_NOT_FOUND');
   }
 
   if (normalizedStatus === 'ATTENDED') {
@@ -224,7 +224,7 @@ export async function removeAppointment({ id, psychologistId }) {
   const deleted = await softDeleteAppointment({ id, psychologistId });
 
   if (!deleted) {
-    throw new AppError('Appointment not found', 404, 'APPOINTMENT_NOT_FOUND');
+    throw new AppError('Agendamento não encontrado', 404, 'APPOINTMENT_NOT_FOUND');
   }
 
   return { ...current, status: 'REMOVED' };

@@ -35,7 +35,7 @@ import {
 
 function requirePsychologist(psychologistId) {
   if (!psychologistId) {
-    throw new AppError('Only psychologist users can access patients', 403, 'FORBIDDEN');
+    throw new AppError('Apenas usuários psicólogos podem acessar pacientes', 403, 'FORBIDDEN');
   }
 }
 
@@ -62,14 +62,14 @@ function mergePatient(existing, incoming) {
 function validatePatient(patient) {
   const status = normalizePatientStatus(patient.status);
   if (!['ACTIVE', 'INACTIVE'].includes(status)) {
-    throw new AppError('Invalid patient status', 400, 'INVALID_STATUS');
+    throw new AppError('Status do paciente inválido', 400, 'INVALID_STATUS');
   }
 }
 
 function normalizePatientPayload(patient) {
   return {
     ...patient,
-    recordNumber: assertMaxLength(patient.recordNumber, FIELD_LIMITS.recordNumber, 'Prontuario'),
+    recordNumber: assertMaxLength(patient.recordNumber, FIELD_LIMITS.recordNumber, 'Prontuário'),
     name: assertRequiredMaxLength(patient.name, FIELD_LIMITS.name, 'Nome'),
     dob: normalizeDateField(patient.dob, 'Nascimento'),
     cpf: normalizeCpf(patient.cpf),
@@ -77,16 +77,16 @@ function normalizePatientPayload(patient) {
     phone: normalizePhone(patient.phone, 'Telefone'),
     whatsapp: normalizePhone(patient.whatsapp, 'WhatsApp'),
     email: assertEmail(patient.email),
-    profession: assertMaxLength(patient.profession, FIELD_LIMITS.profession, 'Profissao'),
+    profession: assertMaxLength(patient.profession, FIELD_LIMITS.profession, 'Profissão'),
     civilStatus: assertMaxLength(patient.civilStatus, FIELD_LIMITS.civilStatus, 'Estado civil'),
-    address: assertMaxLength(patient.address, FIELD_LIMITS.address, 'Endereco'),
+    address: assertMaxLength(patient.address, FIELD_LIMITS.address, 'Endereço'),
     city: assertMaxLength(patient.city, FIELD_LIMITS.city, 'Cidade'),
     state: assertMaxLength(patient.state, FIELD_LIMITS.state, 'Estado'),
-    insurance: assertMaxLength(patient.insurance, FIELD_LIMITS.insurance, 'Convenio'),
-    notes: assertMaxLength(patient.notes, FIELD_LIMITS.notes, 'Observacoes'),
-    emergencyName: assertMaxLength(patient.emergencyName, FIELD_LIMITS.emergencyName, 'Contato de emergencia'),
-    emergencyRelationship: assertMaxLength(patient.emergencyRelationship, FIELD_LIMITS.emergencyRelationship, 'Relacao do contato de emergencia'),
-    emergencyPhone: normalizePhone(patient.emergencyPhone, 'Telefone de emergencia'),
+    insurance: assertMaxLength(patient.insurance, FIELD_LIMITS.insurance, 'Convênio'),
+    notes: assertMaxLength(patient.notes, FIELD_LIMITS.notes, 'Observações'),
+    emergencyName: assertMaxLength(patient.emergencyName, FIELD_LIMITS.emergencyName, 'Contato de emergência'),
+    emergencyRelationship: assertMaxLength(patient.emergencyRelationship, FIELD_LIMITS.emergencyRelationship, 'Relação do contato de emergência'),
+    emergencyPhone: normalizePhone(patient.emergencyPhone, 'Telefone de emergência'),
     status: normalizePatientStatus(patient.status)
   };
 }
@@ -120,7 +120,7 @@ export async function getPatient({ id, psychologistId }) {
   const row = await findPatientById({ id, psychologistId });
 
   if (!row) {
-    throw new AppError('Patient not found', 404, 'PATIENT_NOT_FOUND');
+    throw new AppError('Paciente não encontrado', 404, 'PATIENT_NOT_FOUND');
   }
 
   return decryptPatient(row);
@@ -164,7 +164,7 @@ export async function editPatient({ id, psychologistId, data }) {
   });
 
   if (!updated) {
-    throw new AppError('Patient not found', 404, 'PATIENT_NOT_FOUND');
+    throw new AppError('Paciente não encontrado', 404, 'PATIENT_NOT_FOUND');
   }
 
   return getPatient({ id, psychologistId });
@@ -176,7 +176,7 @@ export async function removePatient({ id, psychologistId }) {
   const deleted = await softDeletePatient({ id, psychologistId });
 
   if (!deleted) {
-    throw new AppError('Patient not found', 404, 'PATIENT_NOT_FOUND');
+    throw new AppError('Paciente não encontrado', 404, 'PATIENT_NOT_FOUND');
   }
 }
 

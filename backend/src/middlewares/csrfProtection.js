@@ -17,7 +17,7 @@ export function csrfProtection(req, res, next) {
   if (!timingSafeEqualString(cookieToken, headerToken)) {
     return res.status(403).json({
       error: 'INVALID_CSRF_TOKEN',
-      message: 'Invalid CSRF token'
+      message: 'Token CSRF inválido'
     });
   }
 

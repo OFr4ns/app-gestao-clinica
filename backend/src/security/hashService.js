@@ -3,7 +3,7 @@ import { env } from '../config/env.js';
 
 function getHashKey() {
   if (!env.security.hashKey) {
-    throw new Error('APP_HASH_KEY is required');
+    throw new Error('APP_HASH_KEY é obrigatória');
   }
 
   return env.security.hashKey;
@@ -54,4 +54,3 @@ export function hmacDigits(value) {
 export function sha256(value) {
   return crypto.createHash('sha256').update(String(value)).digest('hex');
 }
-

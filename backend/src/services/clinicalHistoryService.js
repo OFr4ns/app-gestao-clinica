@@ -23,21 +23,21 @@ import {
 
 function requirePsychologist(psychologistId) {
   if (!psychologistId) {
-    throw new AppError('Only psychologist users can access clinical history', 403, 'FORBIDDEN');
+    throw new AppError('Apenas usuários psicólogos podem acessar o prontuário clínico', 403, 'FORBIDDEN');
   }
 }
 
 function validateClinicalHistory(data) {
   if (!data.patientId) {
-    throw new AppError('Patient is required', 400, 'VALIDATION_ERROR');
+    throw new AppError('Paciente é obrigatório', 400, 'VALIDATION_ERROR');
   }
 
   data.serviceDate = normalizeDateField(data.serviceDate || data.date, 'Data do atendimento');
-  data.title = assertRequiredMaxLength(data.title, FIELD_LIMITS.clinicalTitle, 'Titulo');
-  data.notes = assertRequiredMaxLength(data.notes, FIELD_LIMITS.clinicalNotes, 'Anotacoes');
+  data.title = assertRequiredMaxLength(data.title, FIELD_LIMITS.clinicalTitle, 'Título');
+  data.notes = assertRequiredMaxLength(data.notes, FIELD_LIMITS.clinicalNotes, 'Anotações');
 
   if (!(data.serviceDate || data.date)) {
-    throw new AppError('Service date is required', 400, 'VALIDATION_ERROR');
+    throw new AppError('Data do atendimento é obrigatória', 400, 'VALIDATION_ERROR');
   }
 }
 
@@ -45,7 +45,7 @@ async function getScopedPatient({ patientId, psychologistId }) {
   const row = await findPatientById({ id: patientId, psychologistId });
 
   if (!row) {
-    throw new AppError('Patient not found', 404, 'PATIENT_NOT_FOUND');
+    throw new AppError('Paciente não encontrado', 404, 'PATIENT_NOT_FOUND');
   }
 
   return decryptPatient(row);
@@ -91,7 +91,7 @@ export async function getClinicalHistoryEntry({ id, psychologistId }) {
   const row = await findClinicalHistoryById({ id, psychologistId });
 
   if (!row) {
-    throw new AppError('Clinical history entry not found', 404, 'CLINICAL_HISTORY_NOT_FOUND');
+    throw new AppError('Registro clínico não encontrado', 404, 'CLINICAL_HISTORY_NOT_FOUND');
   }
 
   return hydrateHistory(row, psychologistId);
@@ -133,7 +133,7 @@ export async function editClinicalHistoryEntry({ id, psychologistId, data }) {
   });
 
   if (!updated) {
-    throw new AppError('Clinical history entry not found', 404, 'CLINICAL_HISTORY_NOT_FOUND');
+    throw new AppError('Registro clínico não encontrado', 404, 'CLINICAL_HISTORY_NOT_FOUND');
   }
 
   return getClinicalHistoryEntry({ id, psychologistId });
@@ -145,6 +145,6 @@ export async function removeClinicalHistoryEntry({ id, psychologistId }) {
   const deleted = await softDeleteClinicalHistory({ id, psychologistId });
 
   if (!deleted) {
-    throw new AppError('Clinical history entry not found', 404, 'CLINICAL_HISTORY_NOT_FOUND');
+    throw new AppError('Registro clínico não encontrado', 404, 'CLINICAL_HISTORY_NOT_FOUND');
   }
 }

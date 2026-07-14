@@ -10,7 +10,7 @@ function text(value) {
 }
 
 export function validateRequired(value, label) {
-  return text(value) ? '' : `${label} e obrigatorio.`;
+  return text(value) ? '' : `${label} é obrigatório.`;
 }
 
 export function validateEmail(value) {
@@ -48,43 +48,43 @@ export function validatePatientForm(patient) {
   const email = text(patient.email);
 
   if (!name) {
-    errors.push('Nome completo e obrigatorio.');
+    errors.push('Nome completo é obrigatório.');
   }
 
   if (name.length > fieldLimits.name) {
-    errors.push(`Nome completo deve ter no maximo ${fieldLimits.name} caracteres.`);
+    errors.push(`Nome completo deve ter no máximo ${fieldLimits.name} caracteres.`);
   }
 
   if (!dob) {
-    errors.push('Data de nascimento e obrigatoria.');
+    errors.push('Data de nascimento é obrigatória.');
   } else if (!validateDate(dob)) {
     errors.push('Data de nascimento deve estar em um formato valido.');
   }
 
   if (!validateOptionalCpf(patient.cpf)) {
-    errors.push('CPF deve conter 11 numeros.');
+    errors.push('CPF deve conter 11 números.');
   }
 
   if (digitsOnly(patient.rg).length > fieldLimits.rg) {
-    errors.push(`RG deve ter no maximo ${fieldLimits.rg} numeros.`);
+    errors.push(`RG deve ter no máximo ${fieldLimits.rg} números.`);
   }
 
   if (!validateOptionalPhone(patient.phone)) {
-    errors.push('Telefone deve conter 10 ou 11 numeros.');
+    errors.push('Telefone deve conter 10 ou 11 números.');
   }
 
   if (!validateOptionalPhone(patient.whatsapp)) {
-    errors.push('WhatsApp deve conter 10 ou 11 numeros.');
+    errors.push('WhatsApp deve conter 10 ou 11 números.');
   }
 
   if (email.length > fieldLimits.email) {
-    errors.push(`E-mail deve ter no maximo ${fieldLimits.email} caracteres.`);
+    errors.push(`E-mail deve ter no máximo ${fieldLimits.email} caracteres.`);
   } else if (!validateEmail(email)) {
-    errors.push('E-mail invalido.');
+    errors.push('E-mail inválido.');
   }
 
   if (!validateOptionalPhone(patient.emergencyPhone)) {
-    errors.push('Telefone do contato de emergencia deve conter 10 ou 11 numeros.');
+    errors.push('Telefone do contato de emergência deve conter 10 ou 11 números.');
   }
 
   return errors;
@@ -94,36 +94,36 @@ export function validateAppointmentForm(appointment, { includeFinancial = false 
   const errors = [];
 
   if (!text(appointment.patientId)) {
-    errors.push('Paciente e obrigatorio.');
+    errors.push('Paciente é obrigatório.');
   }
 
   if (!text(appointment.date)) {
-    errors.push('Data do agendamento e obrigatoria.');
+    errors.push('Data do agendamento é obrigatória.');
   } else if (!validateDate(appointment.date)) {
     errors.push('Data do agendamento deve estar em um formato valido.');
   }
 
   if (!text(appointment.time)) {
-    errors.push('Horario e obrigatorio.');
+    errors.push('Horário é obrigatório.');
   } else if (!validateTime(appointment.time)) {
-    errors.push('Horario deve estar em um formato valido.');
+    errors.push('Horário deve estar em um formato válido.');
   }
 
   if (!appointmentStatuses.includes(appointment.status)) {
-    errors.push('Status do agendamento invalido.');
+    errors.push('Status do agendamento inválido.');
   }
 
   if (text(appointment.notes).length > fieldLimits.appointmentNotes) {
-    errors.push(`Observacoes devem ter no maximo ${fieldLimits.appointmentNotes} caracteres.`);
+    errors.push(`Observações devem ter no máximo ${fieldLimits.appointmentNotes} caracteres.`);
   }
 
   if (includeFinancial && appointment.generateFinancial) {
     if (!validateMoney(appointment.amount)) {
-      errors.push('Valor da sessao deve ser um numero entre 0 e 99999999.99.');
+      errors.push('Valor da sessão deve ser um número entre 0 e 99999999.99.');
     }
 
     if (!paymentMethods.includes(appointment.method)) {
-      errors.push('Forma de recebimento invalida.');
+      errors.push('Forma de recebimento inválida.');
     }
   }
 
@@ -134,33 +134,33 @@ export function validateFinancialForm(financial) {
   const errors = [];
 
   if (!text(financial.patientId)) {
-    errors.push('Paciente e obrigatorio.');
+    errors.push('Paciente é obrigatório.');
   }
 
   if (!validateMoney(financial.amount)) {
-    errors.push('Valor cobrado deve ser um numero entre 0 e 99999999.99.');
+    errors.push('Valor cobrado deve ser um número entre 0 e 99999999.99.');
   }
 
   if (!text(financial.dueDate)) {
-    errors.push('Data de vencimento e obrigatoria.');
+    errors.push('Data de vencimento é obrigatória.');
   } else if (!validateDate(financial.dueDate)) {
-    errors.push('Data de vencimento deve estar em um formato valido.');
+    errors.push('Data de vencimento deve estar em um formato válido.');
   }
 
   if (!paymentMethods.includes(financial.method)) {
-    errors.push('Forma de pagamento invalida.');
+    errors.push('Forma de pagamento inválida.');
   }
 
   if (!financialStatuses.includes(financial.status)) {
-    errors.push('Status financeiro invalido.');
+    errors.push('Status financeiro inválido.');
   }
 
   if (text(financial.description).length > fieldLimits.financialDescription) {
-    errors.push(`Descricao deve ter no maximo ${fieldLimits.financialDescription} caracteres.`);
+    errors.push(`Descrição deve ter no máximo ${fieldLimits.financialDescription} caracteres.`);
   }
 
   if (text(financial.notes).length > fieldLimits.financialNotes) {
-    errors.push(`Observacoes devem ter no maximo ${fieldLimits.financialNotes} caracteres.`);
+    errors.push(`Observações devem ter no máximo ${fieldLimits.financialNotes} caracteres.`);
   }
 
   return errors;
@@ -170,25 +170,25 @@ export function validateClinicalHistoryForm(history) {
   const errors = [];
 
   if (!text(history.patientId)) {
-    errors.push('Paciente e obrigatorio.');
+    errors.push('Paciente é obrigatório.');
   }
 
   if (!text(history.serviceDate)) {
-    errors.push('Data do atendimento e obrigatoria.');
+    errors.push('Data do atendimento é obrigatória.');
   } else if (!validateDate(history.serviceDate)) {
-    errors.push('Data do atendimento deve estar em um formato valido.');
+    errors.push('Data do atendimento deve estar em um formato válido.');
   }
 
   if (!text(history.title)) {
-    errors.push('Titulo da sessao e obrigatorio.');
+    errors.push('Título da sessão é obrigatório.');
   } else if (text(history.title).length > fieldLimits.clinicalTitle) {
-    errors.push(`Titulo da sessao deve ter no maximo ${fieldLimits.clinicalTitle} caracteres.`);
+    errors.push(`Título da sessão deve ter no máximo ${fieldLimits.clinicalTitle} caracteres.`);
   }
 
   if (!text(history.notes)) {
-    errors.push('Evolucao clinica e obrigatoria.');
+    errors.push('Evolução clínica é obrigatória.');
   } else if (text(history.notes).length > fieldLimits.clinicalNotes) {
-    errors.push(`Evolucao clinica deve ter no maximo ${fieldLimits.clinicalNotes} caracteres.`);
+    errors.push(`Evolução clínica deve ter no máximo ${fieldLimits.clinicalNotes} caracteres.`);
   }
 
   return errors;
@@ -201,25 +201,25 @@ export function validateUserForm(user, { editing = false } = {}) {
   const password = String(user.password || '');
 
   if (!name) {
-    errors.push('Nome e obrigatorio.');
+    errors.push('Nome é obrigatório.');
   } else if (name.length > fieldLimits.name) {
-    errors.push(`Nome deve ter no maximo ${fieldLimits.name} caracteres.`);
+    errors.push(`Nome deve ter no máximo ${fieldLimits.name} caracteres.`);
   }
 
   if (!email) {
-    errors.push('E-mail e obrigatorio.');
+    errors.push('E-mail é obrigatório.');
   } else if (email.length > fieldLimits.email) {
-    errors.push(`E-mail deve ter no maximo ${fieldLimits.email} caracteres.`);
+    errors.push(`E-mail deve ter no máximo ${fieldLimits.email} caracteres.`);
   } else if (!validateEmail(email)) {
-    errors.push('E-mail invalido.');
+    errors.push('E-mail inválido.');
   }
 
   if (!userRoles.includes(user.role)) {
-    errors.push('Perfil de usuario invalido.');
+    errors.push('Perfil de usuário inválido.');
   }
 
   if (!editing && !password) {
-    errors.push('Senha temporaria e obrigatoria.');
+    errors.push('Senha temporária é obrigatória.');
   }
 
   if (password && password.length < 8) {
@@ -227,7 +227,7 @@ export function validateUserForm(user, { editing = false } = {}) {
   }
 
   if (password.length > fieldLimits.password) {
-    errors.push(`Senha deve ter no maximo ${fieldLimits.password} caracteres.`);
+    errors.push(`Senha deve ter no máximo ${fieldLimits.password} caracteres.`);
   }
 
   return errors;
@@ -239,15 +239,15 @@ export function validateLoginForm(login) {
   const password = String(login.password || '');
 
   if (!email) {
-    errors.push('E-mail e obrigatorio.');
+    errors.push('E-mail é obrigatório.');
   } else if (!validateEmail(email)) {
-    errors.push('E-mail invalido.');
+    errors.push('E-mail inválido.');
   }
 
   if (!password) {
-    errors.push('Senha e obrigatoria.');
+    errors.push('Senha é obrigatória.');
   } else if (password.length > fieldLimits.password) {
-    errors.push(`Senha deve ter no maximo ${fieldLimits.password} caracteres.`);
+    errors.push(`Senha deve ter no máximo ${fieldLimits.password} caracteres.`);
   }
 
   return errors;

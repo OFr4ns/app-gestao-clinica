@@ -85,8 +85,8 @@ export function PaginationControls({ pagination, onPageChange, onPageSizeChange 
       <span>{total} registro{total === 1 ? '' : 's'}</span>
       <div className="pagination-actions">
         <button className="small-button" type="button" onClick={() => onPageChange(page - 1)} disabled={page <= 1}>Anterior</button>
-        <strong>Pagina {totalPages ? page : 0} de {totalPages}</strong>
-        <button className="small-button" type="button" onClick={() => onPageChange(page + 1)} disabled={!totalPages || page >= totalPages}>Proxima</button>
+        <strong>Página {totalPages ? page : 0} de {totalPages}</strong>
+        <button className="small-button" type="button" onClick={() => onPageChange(page + 1)} disabled={!totalPages || page >= totalPages}>Próxima</button>
         <select value={pageSize} onChange={(event) => onPageSizeChange(Number(event.target.value))}>
           <option value="10">10</option>
           <option value="20">20</option>

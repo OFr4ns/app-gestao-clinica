@@ -37,7 +37,7 @@ export function AuthScreen({ onAuthenticated }) {
     <main className="auth-page">
       <section className="auth-shell">
         <div className="auth-panel">
-          <div className="brand-mark"><ShieldCheck size={24} /><span>Gestao Clinica</span></div>
+          <div className="brand-mark"><ShieldCheck size={24} /><span>Gestão Clínica</span></div>
           <div className="auth-heading">
             <h1>Bem-vindo de volta</h1>
             <p className="muted">Entre com seu acesso autorizado.</p>
