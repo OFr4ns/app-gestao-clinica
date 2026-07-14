@@ -331,17 +331,39 @@ test('operational list endpoints return pagination metadata', async () => {
   });
   assert.equal(financial.response.status, 201);
 
+  const clinicalTitle = 'Sessao de teste';
+  const clinicalNotes = 'Anotacao clinica de teste';
   const history = await safeRequest('/clinical-history', {
     method: 'POST',
     cookie: owner.cookie,
     body: {
       patientId,
       serviceDate: '2030-01-15',
-      title: 'Sessao de teste',
-      notes: 'Anotacao clinica de teste'
+      title: clinicalTitle,
+      notes: clinicalNotes
     }
   });
   assert.equal(history.response.status, 201);
+  assert.equal(history.data.entry.title, clinicalTitle);
+  assert.equal(history.data.entry.notes, clinicalNotes);
+
+  const connection = await db();
+  try {
+    const [rows] = await connection.execute(
+      `SELECT title_encrypted, notes_encrypted
+       FROM clinical_history
+       WHERE id = ?`,
+      [history.data.entry.id]
+    );
+
+    assert.equal(rows.length, 1);
+    assert.match(rows[0].title_encrypted, /^v1:/);
+    assert.match(rows[0].notes_encrypted, /^v1:/);
+    assert.equal(rows[0].title_encrypted.includes(clinicalTitle), false);
+    assert.equal(rows[0].notes_encrypted.includes(clinicalNotes), false);
+  } finally {
+    await connection.end();
+  }
 
   const appointments = await request('/appointments?page=1&pageSize=10&date=2030-01-15', {
     cookie: owner.cookie

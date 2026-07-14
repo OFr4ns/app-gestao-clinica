@@ -1,12 +1,22 @@
-import { decryptField, encryptField } from '../security/cryptoService.js';
+import { decryptField, encryptField, isEncryptedField } from '../security/cryptoService.js';
 import { toIsoDate, toIsoDateTime } from '../utils/dateUtils.js';
+
+function encryptRequiredClinicalField(value, label) {
+  const encrypted = encryptField(value);
+
+  if (!isEncryptedField(encrypted)) {
+    throw new Error(`${label} must be encrypted before persistence`);
+  }
+
+  return encrypted;
+}
 
 export function toClinicalHistoryRow(data) {
   return {
     patient_id: data.patientId,
     service_date: data.serviceDate || data.date,
-    title_encrypted: encryptField(data.title),
-    notes_encrypted: encryptField(data.notes)
+    title_encrypted: encryptRequiredClinicalField(data.title, 'Clinical history title'),
+    notes_encrypted: encryptRequiredClinicalField(data.notes, 'Clinical history notes')
   };
 }
 
@@ -28,4 +38,3 @@ export function decryptClinicalHistory(row, patient = null) {
     deletedAt: toIsoDateTime(row.deleted_at)
   };
 }
-

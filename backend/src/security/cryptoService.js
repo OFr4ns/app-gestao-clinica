@@ -45,6 +45,15 @@ export function encryptField(value) {
   ].join(':');
 }
 
+export function isEncryptedField(payload) {
+  if (!payload) {
+    return false;
+  }
+
+  const [version, ivBase64, authTagBase64, ciphertextBase64] = String(payload).split(':');
+  return Boolean(version === VERSION && ivBase64 && authTagBase64 && ciphertextBase64);
+}
+
 export function decryptField(payload) {
   if (!payload) {
     return null;
@@ -71,4 +80,3 @@ export function decryptField(payload) {
 
   return plaintext.toString('utf8');
 }
-
