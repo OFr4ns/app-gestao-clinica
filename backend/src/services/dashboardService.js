@@ -83,8 +83,12 @@ export async function getReports({ psychologistId }) {
       totalAppointments: totals.totalAppointments,
       attended: totals.attended,
       missed: totals.missed,
+      pending: totals.pending,
+      upcoming: totals.upcoming,
       attendedPercentage: Math.round((totals.attended / operationalBase) * 100),
-      missedPercentage: Math.round((totals.missed / operationalBase) * 100)
+      missedPercentage: Math.round((totals.missed / operationalBase) * 100),
+      pendingPercentage: Math.round((totals.pending / operationalBase) * 100),
+      upcomingPercentage: Math.round((totals.upcoming / operationalBase) * 100)
     },
     financial: {
       paidTotal: totals.paidTotal,
@@ -94,4 +98,3 @@ export async function getReports({ psychologistId }) {
     }
   };
 }
-

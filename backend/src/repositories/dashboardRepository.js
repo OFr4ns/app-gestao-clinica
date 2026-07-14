@@ -107,6 +107,17 @@ export async function getReportTotals({ psychologistId }) {
         WHERE psychologist_id = ?
           AND deleted_at IS NULL
           AND status = 'MISSED') AS missed,
+       (SELECT COUNT(*)
+        FROM appointments
+        WHERE psychologist_id = ?
+          AND deleted_at IS NULL
+          AND status IN ('SCHEDULED', 'CONFIRMED', 'RESCHEDULED')) AS pending,
+       (SELECT COUNT(*)
+        FROM appointments
+        WHERE psychologist_id = ?
+          AND deleted_at IS NULL
+          AND status IN ('SCHEDULED', 'CONFIRMED', 'RESCHEDULED')
+          AND appointment_date >= CURRENT_DATE()) AS upcoming,
        (SELECT COALESCE(SUM(amount), 0)
         FROM financial_records
         WHERE psychologist_id = ?
@@ -117,13 +128,23 @@ export async function getReportTotals({ psychologistId }) {
         WHERE psychologist_id = ?
           AND deleted_at IS NULL
           AND status <> 'PAID') AS open_total`,
-    [psychologistId, psychologistId, psychologistId, psychologistId, psychologistId]
+    [
+      psychologistId,
+      psychologistId,
+      psychologistId,
+      psychologistId,
+      psychologistId,
+      psychologistId,
+      psychologistId
+    ]
   );
 
   return {
     totalAppointments: Number(rows[0]?.total_appointments || 0),
     attended: Number(rows[0]?.attended || 0),
     missed: Number(rows[0]?.missed || 0),
+    pending: Number(rows[0]?.pending || 0),
+    upcoming: Number(rows[0]?.upcoming || 0),
     paidTotal: Number(rows[0]?.paid_total || 0),
     openTotal: Number(rows[0]?.open_total || 0)
   };
